@@ -68,9 +68,10 @@ A running record of project configuration. Add each setup change here as it is m
   `node_modules`/`.git`; `.gitignore` + `search.useIgnoreFiles` already cover
   search, so only `coverage` and `pnpm-lock.yaml` are added there), uses the
   workspace TypeScript version, sets pnpm as the package manager, makes
-  Prettier the default formatter with format-on-save, and applies ESLint
-  autofixes on save. Settings are reviewed for current relevance, not just
-  valid syntax.
+  Prettier the default formatter with format-on-save, applies ESLint autofixes
+  on save, and enables Tailwind IntelliSense for Nuxt UI (treat `.css` as
+  Tailwind, suggest inside strings, scan the `ui` prop and `defineAppConfig`).
+  Settings are reviewed for current relevance, not just valid syntax.
 - `.vscode/extensions.json` — recommends the extensions this project is built
   around (Prettier, Vue Volar, Prisma, Tailwind CSS, ESLint) so contributors
   get a one-click install prompt, and marks conflicting/legacy ones as unwanted
@@ -102,7 +103,22 @@ A running record of project configuration. Add each setup change here as it is m
 ### Nuxt
 
 - `nuxt.config.ts`: `compatibilityDate: '2025-07-15'`, `devtools.enabled: false`.
-- Scaffold: `app/app.vue` with `NuxtLayout` + `NuxtPage`.
+- Scaffold: `app/app.vue` wraps `NuxtLayout` + `NuxtPage` in `<UApp>`.
+
+### UI
+
+- `@nuxt/ui` + `tailwindcss` as runtime dependencies — the component library
+  (Reka UI + Tailwind CSS v4). Registered in `nuxt.config.ts` via
+  `modules: ['@nuxt/ui']`; it auto-registers `@nuxt/icon`, `@nuxt/fonts` and
+  `@nuxtjs/color-mode`, so those are not listed separately.
+- `app/assets/css/main.css` — the single stylesheet, loaded through
+  `css: ['~/assets/css/main.css']`. Holds only `@import 'tailwindcss'` and
+  `@import '@nuxt/ui'`; Tailwind v4 is configured in CSS, so there is no
+  `tailwind.config`.
+- `app/app.vue` wraps the tree in `<UApp>` — required for toasts, tooltips and
+  programmatic overlays.
+- pnpm gate: `vue-demi` is allow-listed in `pnpm-workspace.yaml` so its
+  postinstall (which pins it to the installed Vue major) may run.
 
 ### Environment variables
 
