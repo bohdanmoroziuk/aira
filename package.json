@@ -1,0 +1,37 @@
+{
+  "name": "aira",
+  "type": "module",
+  "private": true,
+  "author": "Bohdan Moroziuk <bogdan7morozyuk@gmail.com> (https://github.com/bohdanmoroziuk)",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bohdanmoroziuk/aira.git"
+  },
+  "homepage": "https://github.com/bohdanmoroziuk/aira#readme",
+  "bugs": {
+    "url": "https://github.com/bohdanmoroziuk/aira/issues"
+  },
+  "packageManager": "pnpm@12.3.4",
+  "engines": {
+    "node": ">=22.14.0",
+    "pnpm": ">=12"
+  },
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "typecheck": "nuxt typecheck",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "nuxt": "^4.5.2",
+    "vue": "^3.5.42",
+    "vue-router": "^5.3.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "vue-tsc": "^3.3.11"
+  }
+}
