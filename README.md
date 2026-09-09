@@ -39,3 +39,31 @@ Run a full type check with `vue-tsc`:
 ```bash
 pnpm typecheck
 ```
+
+## Linting
+
+Check the codebase with ESLint (flat config, powered by `@nuxt/eslint`):
+
+```bash
+pnpm lint
+```
+
+Auto-fix what can be fixed:
+
+```bash
+pnpm lint:fix
+```
+
+## Formatting
+
+Format every file with Prettier:
+
+```bash
+pnpm format
+```
+
+Verify formatting without writing changes (use this in CI):
+
+```bash
+pnpm format:check
+```

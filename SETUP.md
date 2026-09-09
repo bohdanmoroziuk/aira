@@ -10,12 +10,12 @@ A running record of project configuration. Add each setup change here as it is m
 
 ## Environment
 
-| Tool | Version |
-|---|---|
+| Tool | Version                                                            |
+| ---- | ------------------------------------------------------------------ |
 | Node | >=22.14.0 (pinned via `.nvmrc`, enforced via `engines` + `.npmrc`) |
-| pnpm | 12.3.4 |
-| Nuxt | ^4.5.2 |
-| Vue | ^3.5.42 |
+| pnpm | 12.3.4                                                             |
+| Nuxt | ^4.5.2                                                             |
+| Vue  | ^3.5.42                                                            |
 
 ---
 
@@ -67,12 +67,37 @@ A running record of project configuration. Add each setup change here as it is m
   build/output dirs from the file watcher (VS Code's defaults already cover
   `node_modules`/`.git`; `.gitignore` + `search.useIgnoreFiles` already cover
   search, so only `coverage` and `pnpm-lock.yaml` are added there), uses the
-  workspace TypeScript version, and sets pnpm as the package manager. Settings
-  are reviewed for current relevance, not just valid syntax.
+  workspace TypeScript version, sets pnpm as the package manager, makes
+  Prettier the default formatter with format-on-save, and applies ESLint
+  autofixes on save. Settings are reviewed for current relevance, not just
+  valid syntax.
 - `.vscode/extensions.json` — recommends the extensions this project is built
   around (Prettier, Vue Volar, Prisma, Tailwind CSS, ESLint) so contributors
   get a one-click install prompt, and marks conflicting/legacy ones as unwanted
   (Vetur and the deprecated Vue TypeScript plugin, both superseded by Volar).
+
+### Linting and formatting
+
+- `@nuxt/eslint` + `eslint` as devDependencies — the module wires ESLint into
+  Nuxt and generates a project-aware flat config (`.nuxt/eslint.config.mjs`,
+  gitignored) from the actual route/component/import setup.
+- `eslint.config.mjs` (repository root) — the real entry point: re-exports the
+  generated config through `withNuxt()`. Registered in `nuxt.config.ts` via
+  `modules: ['@nuxt/eslint']`.
+- The module's `stylistic` option is left off (its default): Prettier owns
+  formatting, so enabling the `@stylistic` rule set would only duplicate work
+  Prettier already does.
+- `eslint-config-prettier` is applied **last** in `eslint.config.mjs` as a
+  guard — if a formatting-related rule is ever added, it stays disabled so it
+  can't fight Prettier. ESLint keeps the correctness and Vue/Nuxt rules.
+- `prettier` as a devDependency is the single formatter. `.prettierrc.json`
+  pins the house style (`singleQuote`, no semicolons — matches the existing
+  code); `.prettierignore` skips generated output and the lockfile.
+- Scripts: `lint` (`eslint .`), `lint:fix` (`eslint . --fix`), `format`
+  (`prettier --write .`), `format:check` (`prettier --check .`).
+- pnpm gate: `unrs-resolver` (native resolver used by the ESLint import plugin)
+  is allow-listed in `pnpm-workspace.yaml` so its build script may run under
+  pnpm's blocked-by-default policy.
 
 ### Nuxt
 

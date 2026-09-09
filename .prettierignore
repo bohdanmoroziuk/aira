@@ -1,0 +1,11 @@
+# Generated / build output
+.nuxt
+.output
+.data
+.nitro
+.cache
+dist
+coverage
+
+# Lockfile
+pnpm-lock.yaml
