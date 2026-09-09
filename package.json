@@ -42,6 +42,7 @@
     "eslint": "^10.10.0",
     "eslint-config-prettier": "^10.1.8",
     "husky": "^9.1.7",
+    "nuxt-typed-router": "^4.0.10",
     "prettier": "^3.9.6",
     "typescript": "^5.9.3",
     "vue-tsc": "^3.3.11"
