@@ -100,6 +100,14 @@ A running record of project configuration. Add each setup change here as it is m
   is allow-listed in `pnpm-workspace.yaml` so its build script may run under
   pnpm's blocked-by-default policy.
 
+### Git hooks
+
+- `husky` as a devDependency — manages Git hooks in-repo. The `prepare` script
+  (`"prepare": "husky"`) installs them automatically on `pnpm install`, so every
+  contributor gets the hooks without a manual step.
+- `.husky/pre-commit` runs `pnpm lint` (`eslint .`) before each commit, so lint
+  errors block the commit locally instead of only surfacing in CI.
+
 ### Nuxt
 
 - `nuxt.config.ts`: `compatibilityDate: '2025-07-15'`, `devtools.enabled: false`.
