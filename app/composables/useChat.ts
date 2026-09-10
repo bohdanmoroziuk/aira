@@ -32,6 +32,7 @@ const MOCK_CHAT: Chat = {
 export const useChat = () => {
   const chat = ref<Chat>(MOCK_CHAT)
   const messages = computed<ChatMessage[]>(() => chat.value.messages)
+  const isStreaming = ref(false)
 
   const createMessage = (text: string, role: ChatRole): ChatMessage => {
     return {
@@ -42,16 +43,29 @@ export const useChat = () => {
   }
 
   const sendMessage = async (text: string) => {
+    if (isStreaming.value) return
+
     messages.value.push(createMessage(text, 'user'))
+    isStreaming.value = true
 
-    await sleep(200)
+    try {
+      // TODO: replace the mock with a real (streaming) API request.
+      await sleep(200)
 
-    messages.value.push(createMessage(`You said: ${text}`, 'assistant'))
+      messages.value.push(createMessage(`You said: ${text}`, 'assistant'))
+    } catch (error) {
+      // TODO: surface the failure to the user (toast / inline error message)
+      //       and decide whether to keep or roll back the optimistic message.
+      console.error('Failed to send message', error)
+    } finally {
+      isStreaming.value = false
+    }
   }
 
   return {
     chat,
     messages,
+    isStreaming,
     sendMessage,
   }
 }
