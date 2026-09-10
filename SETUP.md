@@ -125,6 +125,10 @@ A running record of project configuration. Add each setup change here as it is m
   `tailwind.config`.
 - `app/app.vue` wraps the tree in `<UApp>` — required for toasts, tooltips and
   programmatic overlays.
+- `app.config.ts` (repository root) — Nuxt UI runtime theme. Overrides the
+  design tokens: `primary` is set to `violet` (replacing the Nuxt UI default
+  `green`) to give Aira a calm, distinctive brand accent, and `neutral` to
+  `slate` for a matching cool grey scale.
 - pnpm gate: `vue-demi` is allow-listed in `pnpm-workspace.yaml` so its
   postinstall (which pins it to the installed Vue major) may run.
 
