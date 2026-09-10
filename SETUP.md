@@ -111,6 +111,9 @@ A running record of project configuration. Add each setup change here as it is m
 ### Nuxt
 
 - `nuxt.config.ts`: `compatibilityDate: '2025-07-15'`, `devtools.enabled: false`.
+- `imports.dirs: ['gateways']` — auto-imports `app/gateways/*`, the layer that
+  wraps backend endpoints (`$fetch` calls) behind typed functions, so callers
+  never touch transport details.
 - Scaffold: `app/app.vue` wraps `NuxtLayout` + `NuxtPage` in `<UApp>`.
 
 ### UI

@@ -36,8 +36,6 @@ export const useChat = () => {
   // FIXME: fresh state per call — not shared between consumers. Back it with
   //        useState (or a store) so a sidebar / header sees the same chat.
   const chat = ref<Chat>(MOCK_CHAT)
-  // FIXME: sendMessage mutates this array via `.push` behind the computed.
-  //        Prefer a dedicated `messages` ref or an `addMessage` action.
   const messages = computed<ChatMessage[]>(() => chat.value.messages)
   const isStreaming = ref(false)
 
@@ -51,17 +49,21 @@ export const useChat = () => {
     }
   }
 
+  const addMessage = (message: ChatMessage): ChatMessage => {
+    chat.value.messages.push(message)
+    return message
+  }
+
   const sendMessage = async (text: string) => {
     if (isStreaming.value) return
 
-    messages.value.push(createMessage(text, 'user'))
+    addMessage(createMessage(text, 'user'))
     isStreaming.value = true
 
     try {
-      // TODO: replace the mock with a real (streaming) API request.
-      await sleep(200)
+      const data = await requestAssistantReply(messages.value)
 
-      messages.value.push(createMessage(`You said: ${text}`, 'assistant'))
+      addMessage(data)
     } catch (error) {
       // TODO: surface the failure to the user (toast / inline error message)
       //       and decide whether to keep or roll back the optimistic message.
@@ -75,6 +77,7 @@ export const useChat = () => {
     chat,
     chatTitle,
     messages,
+    addMessage,
     // TODO: return readonly(isStreaming) so consumers can't flip it.
     isStreaming,
     sendMessage,
