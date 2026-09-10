@@ -2,12 +2,23 @@
 const { chat, messages, isStreaming, sendMessage } = useChat()
 const { showScrollButton, scrollToBottom, pinToBottom } = useChatScroll()
 
+// TODO: add computeds `hasMessages` (messages.value.length > 0) and
+//       `chatTitle` (chat.value.title || fallback), or expose them from
+//       useChat, and use them in the template instead of inline expressions.
+
+// FIXME: deep-watching the whole array gets expensive once streaming appends
+//        tokens. Watch messages.value.length / the last message id, or drive
+//        pinToBottom from an addMessage action instead.
 watch(() => messages.value, pinToBottom, { deep: true })
 </script>
 
 <template>
+  <!-- TODO: `box-border` is redundant with Tailwind Preflight. -->
   <div ref="scrollContainer" class="h-full box-border overflow-y-auto">
     <UContainer class="h-full max-w-[800px]">
+      <!-- TODO: use `!hasMessages` once the computed exists. -->
+      <!-- TODO: after the layout refactor this branch becomes a placeholder
+           inside the message area, leaving a single <ChatTextInput>. -->
       <div
         v-if="!messages?.length"
         class="flex items-center justify-center min-h-full"
@@ -24,12 +35,23 @@ watch(() => messages.value, pinToBottom, { deep: true })
       </div>
 
       <template v-else>
+        <!-- TODO: section heading, not the page title — use <h2>. Move the
+             fallback into a `chatTitle` computed + a named constant. -->
         <div class="flex items-center justify-between py-4 mb-6">
           <h1 class="text-2xl font-bold text-default">
             {{ chat?.title || 'Untitled Chat' }}
           </h1>
         </div>
+
+        <!-- TODO: extract <ChatMessageList> (this wrapper + v-for) and
+             <ChatMessageItem> (a single bubble). -->
+        <!-- TODO: a11y — render as <ul>/<li> or role="log" aria-live="polite"
+             so new messages are announced. -->
+        <!-- FIXME: `pb-32` is a guessed spacer for the fixed input; it goes
+             away with the flex-column layout below. -->
         <div class="flex flex-col gap-4 mb-6 pb-32">
+          <!-- TODO: move role-based styling into <ChatMessageItem> (a `variant`
+               prop or class map, not this inline ternary). -->
           <div
             v-for="message in messages"
             :key="message.id"
@@ -40,6 +62,7 @@ watch(() => messages.value, pinToBottom, { deep: true })
                 : 'w-full py-4 bg-transparent'
             "
           >
+            <!-- TODO: `[overflow-wrap:break-word]` duplicates `break-words`. -->
             <div
               class="text-default whitespace-pre-wrap break-words [overflow-wrap:break-word]"
             >
@@ -48,9 +71,14 @@ watch(() => messages.value, pinToBottom, { deep: true })
           </div>
         </div>
 
+        <!-- FIXME: position:fixed + max-width + translateX centering +
+             w-[calc(100%-3rem)] is fragile. Replace with a flex column layout
+             (header + flex-1 overflow-y-auto list + input as a normal child);
+             removes this wrapper, the centering hack and the `pb-32` spacer. -->
         <div
           class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[calc(100%-3rem)] max-w-[800px] z-10"
         >
+          <!-- TODO: extract <ChatScrollToBottomButton>. -->
           <div
             class="absolute bottom-[calc(100%+1rem)] left-0 w-full flex justify-center pointer-events-none"
           >

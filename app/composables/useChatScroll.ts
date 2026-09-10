@@ -7,6 +7,7 @@ export const useChatScroll = () => {
   const checkScrollPosition = (): void => {
     if (scrollContainer.value) {
       const { scrollTop, scrollHeight, clientHeight } = scrollContainer.value
+      // TODO: `200` is a magic threshold — make it a named constant or an option.
       isAtBottom.value = scrollTop + clientHeight >= scrollHeight - 200
       showScrollButton.value = !isAtBottom.value
     }
@@ -24,6 +25,8 @@ export const useChatScroll = () => {
     })
   }
 
+  // TODO: this composable does three things (position tracking, the scroll
+  //       animation, mount auto-scroll) — consider splitting the animation out.
   // Smooth scroll to bottom
   const scrollToBottom = (immediate = false): void => {
     if (!scrollContainer.value) return
@@ -38,6 +41,7 @@ export const useChatScroll = () => {
 
     const startScrollTop = scrollContainer.value.scrollTop
     const distance = targetScrollTop - startScrollTop
+    // TODO: magic number — hoist the animation duration to a named constant.
     const duration = 300
 
     const startTime = performance.now()
@@ -67,6 +71,9 @@ export const useChatScroll = () => {
       // Force immediate scroll without animation when messages change
       if (scrollContainer.value) {
         await nextTick()
+        // FIXME: targets `scrollHeight` while scrollToBottom targets
+        //        `scrollHeight - clientHeight`. Both land at the bottom, but
+        //        the two should use the same target.
         scrollContainer.value.scrollTop = scrollContainer.value.scrollHeight
       }
     }
@@ -98,6 +105,8 @@ export const useChatScroll = () => {
   // Re-check position after DOM updates, throttled to one read per frame
   onUpdated(scheduleScrollCheck)
 
+  // TODO: `isAtBottom` is not consumed by ChatWindow — either use it there or
+  //       drop it from the return.
   return {
     isAtBottom,
     showScrollButton,

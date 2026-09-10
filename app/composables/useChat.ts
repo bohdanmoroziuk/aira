@@ -23,6 +23,7 @@ const MOCK_MESSAGES: ChatMessage[] = [
   },
 ]
 
+// TODO: replace the mock chat/messages with a real data source (API / store).
 const MOCK_CHAT: Chat = {
   id: '1',
   title: 'Nuxt.js project help',
@@ -30,7 +31,11 @@ const MOCK_CHAT: Chat = {
 }
 
 export const useChat = () => {
+  // FIXME: fresh state per call — not shared between consumers. Back it with
+  //        useState (or a store) so a sidebar / header sees the same chat.
   const chat = ref<Chat>(MOCK_CHAT)
+  // FIXME: sendMessage mutates this array via `.push` behind the computed.
+  //        Prefer a dedicated `messages` ref or an `addMessage` action.
   const messages = computed<ChatMessage[]>(() => chat.value.messages)
   const isStreaming = ref(false)
 
@@ -65,6 +70,7 @@ export const useChat = () => {
   return {
     chat,
     messages,
+    // TODO: return readonly(isStreaming) so consumers can't flip it.
     isStreaming,
     sendMessage,
   }
