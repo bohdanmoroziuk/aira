@@ -30,6 +30,8 @@ const MOCK_CHAT: Chat = {
   messages: [...MOCK_MESSAGES],
 }
 
+const DEFAULT_CHAT_TITLE = 'Untitled Chat'
+
 export const useChat = () => {
   // FIXME: fresh state per call — not shared between consumers. Back it with
   //        useState (or a store) so a sidebar / header sees the same chat.
@@ -38,6 +40,8 @@ export const useChat = () => {
   //        Prefer a dedicated `messages` ref or an `addMessage` action.
   const messages = computed<ChatMessage[]>(() => chat.value.messages)
   const isStreaming = ref(false)
+
+  const chatTitle = computed(() => chat.value?.title || DEFAULT_CHAT_TITLE)
 
   const createMessage = (text: string, role: ChatRole): ChatMessage => {
     return {
@@ -69,6 +73,7 @@ export const useChat = () => {
 
   return {
     chat,
+    chatTitle,
     messages,
     // TODO: return readonly(isStreaming) so consumers can't flip it.
     isStreaming,

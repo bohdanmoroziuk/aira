@@ -1,5 +1,22 @@
 <script setup lang="ts">
-const { chat, messages, isStreaming, sendMessage } = useChat()
+const {
+  chat,
+  messages,
+  isStreaming = false,
+} = defineProps<{
+  chat: Chat
+  messages: ChatMessage[]
+  isStreaming?: boolean
+}>()
+
+const emit = defineEmits<{
+  'send-message': [text: string]
+}>()
+
+const sendMessage = (text: string) => {
+  emit('send-message', text)
+}
+
 const { showScrollButton, scrollToBottom, pinToBottom } = useChatScroll()
 
 // TODO: add computeds `hasMessages` (messages.value.length > 0) and
@@ -9,7 +26,7 @@ const { showScrollButton, scrollToBottom, pinToBottom } = useChatScroll()
 // FIXME: deep-watching the whole array gets expensive once streaming appends
 //        tokens. Watch messages.value.length / the last message id, or drive
 //        pinToBottom from an addMessage action instead.
-watch(() => messages.value, pinToBottom, { deep: true })
+watch(() => messages, pinToBottom, { deep: true })
 </script>
 
 <template>
