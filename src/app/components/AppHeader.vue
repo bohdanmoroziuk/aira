@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const appConfig = useAppConfig()
-const { startNewChat } = useNewChat()
+const { startNewChat } = useChats()
 </script>
 
 <template>
@@ -17,7 +17,7 @@ const { startNewChat } = useNewChat()
       <UButton
         icon="i-lucide-plus"
         label="New chat"
-        @click="startNewChat"
+        @click="startNewChat()"
       />
     </div>
     <h1 class="text-lg font-semibold">

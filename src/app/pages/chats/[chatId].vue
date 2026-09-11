@@ -1,6 +1,12 @@
 <script setup lang="ts">
+import { ensureChatExists } from '~/guards/chat-exists.guard'
+
 const toast = useToast()
-const { chat, chatTitle, messages, isStreaming, sendMessage } = useChat()
+const route = useRoute()
+const chatId = route.params.chatId as string
+const { chat, chatTitle, messages, isStreaming, sendMessage } = useChat(chatId)
+
+await ensureChatExists(chat)
 
 const handleMessageSend = async (text: string) => {
   try {
@@ -20,7 +26,7 @@ useHead({
 
 <template>
   <ChatWindow
-    :chat
+    :chat="chat!"
     :messages
     :is-streaming
     @send-message="handleMessageSend"

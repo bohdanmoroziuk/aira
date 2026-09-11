@@ -23,7 +23,7 @@ export default defineEventHandler(async (event) => {
     const response = await generateChatResponse(openaiModel, messages)
 
     return {
-      id: crypto.randomUUID(),
+      id: generateUuid(),
       role: 'assistant',
       content: response,
     }

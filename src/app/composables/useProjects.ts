@@ -3,7 +3,7 @@ export const useProjects = () => {
 
   const createProject = () => {
     const project = {
-      id: crypto.randomUUID(),
+      id: generateUuid(),
       name: 'New project',
       createdAt: new Date(),
       updatedAt: new Date(),
