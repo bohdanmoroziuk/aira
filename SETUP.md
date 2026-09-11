@@ -115,10 +115,14 @@ A running record of project configuration. Add each setup change here as it is m
 ### Nuxt
 
 - `nuxt.config.ts`: `compatibilityDate: '2025-07-15'`, `devtools.enabled: false`.
-- `imports.dirs: ['gateways']` — auto-imports `app/gateways/*`, the layer that
-  wraps backend endpoints (`$fetch` calls) behind typed functions, so callers
-  never touch transport details.
-- Scaffold: `app/app.vue` wraps `NuxtLayout` + `NuxtPage` in `<UApp>`.
+- `srcDir: 'src/app'`, `serverDir: 'src/server'`, `dir: { public: 'src/public',
+  shared: 'src/shared' }` — consolidates all source (`app/`, `server/`,
+  `shared/`, `public/`) under `src/`, keeping only config files at the
+  repository root. `~` still resolves to `srcDir` (`src/app`) automatically.
+- `imports.dirs: ['gateways']` — auto-imports `src/app/gateways/*`, the layer
+  that wraps backend endpoints (`$fetch` calls) behind typed functions, so
+  callers never touch transport details.
+- Scaffold: `src/app/app.vue` wraps `NuxtLayout` + `NuxtPage` in `<UApp>`.
 
 ### UI
 
@@ -126,13 +130,13 @@ A running record of project configuration. Add each setup change here as it is m
   (Reka UI + Tailwind CSS v4). Registered in `nuxt.config.ts` via
   `modules: ['@nuxt/ui']`; it auto-registers `@nuxt/icon`, `@nuxt/fonts` and
   `@nuxtjs/color-mode`, so those are not listed separately.
-- `app/assets/css/main.css` — the single stylesheet, loaded through
+- `src/app/assets/css/main.css` — the single stylesheet, loaded through
   `css: ['~/assets/css/main.css']`. Holds only `@import 'tailwindcss'` and
   `@import '@nuxt/ui'`; Tailwind v4 is configured in CSS, so there is no
   `tailwind.config`.
-- `app/app.vue` wraps the tree in `<UApp>` — required for toasts, tooltips and
-  programmatic overlays.
-- `app.config.ts` (repository root) — Nuxt UI runtime theme. Overrides the
+- `src/app/app.vue` wraps the tree in `<UApp>` — required for toasts, tooltips
+  and programmatic overlays.
+- `src/app/app.config.ts` — Nuxt UI runtime theme. Overrides the
   design tokens: `primary` is set to `violet` (replacing the Nuxt UI default
   `green`) to give Aira a calm, distinctive brand accent, and `neutral` to
   `slate` for a matching cool grey scale.
@@ -142,7 +146,7 @@ A running record of project configuration. Add each setup change here as it is m
 ### Markdown rendering
 
 - `@nuxtjs/mdc` as a runtime dependency — renders markdown (message content)
-  to HTML via `<MDC>`, used in `app/components/MarkdownRenderer.vue`.
+  to HTML via `<MDC>`, used in `src/app/components/MarkdownRenderer.vue`.
   Registered in `nuxt.config.ts` via `modules: ['@nuxtjs/mdc']`.
 - `mdc.highlight` in `nuxt.config.ts` — Shiki syntax highlighting for fenced
   code blocks: `theme: 'material-theme-palenight'`, `langs` limited to the
@@ -157,8 +161,9 @@ A running record of project configuration. Add each setup change here as it is m
 ### AI
 
 - `ai` + `@ai-sdk/openai` as runtime dependencies — Vercel AI SDK's model-agnostic
-  `generateText` and its OpenAI provider. Used in `server/services/ai.service.ts`
-  to build the model and generate the chat response for `server/api/ai.ts`.
+  `generateText` and its OpenAI provider. Used in
+  `src/server/services/ai.service.ts` to build the model and generate the chat
+  response for `src/server/api/ai.ts`.
 - `runtimeConfig.openaiApiKey` in `nuxt.config.ts`, sourced from `OPENAI_API_KEY`
   — server-only, not exposed to the client (no matching key under `public`).
 

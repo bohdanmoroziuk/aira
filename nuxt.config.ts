@@ -1,5 +1,12 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+  srcDir: 'src/app',
+  serverDir: 'src/server',
+  dir: {
+    public: 'src/public',
+    shared: 'src/shared',
+  },
+
   modules: ['@nuxt/eslint', '@nuxt/ui', 'nuxt-typed-router', '@nuxtjs/mdc'],
 
   mdc: {

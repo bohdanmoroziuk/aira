@@ -22,9 +22,9 @@ configuration, tooling, or docs.
 
 ## Types & naming
 
-- Cross-boundary types (shared by `app/` and `server/`) live in
-  `shared/types/*.ts` — top level only, so they are auto-imported and reachable
-  via `#shared`. App-only types go in `app/types/`.
+- Cross-boundary types (shared by `src/app/` and `src/server/`) live in
+  `src/shared/types/*.ts` — top level only, so they are auto-imported and
+  reachable via `#shared`. App-only types go in `src/app/types/`.
 - Chat vocabulary:
   - `message` — a `ChatMessage` object.
   - `content` — the message body string, the `content` field of `ChatMessage`
