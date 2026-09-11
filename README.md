@@ -8,6 +8,12 @@ Make sure to install dependencies:
 pnpm install
 ```
 
+Copy the env file and set your `OPENAI_API_KEY`:
+
+```bash
+cp .env.example .env
+```
+
 ## Development Server
 
 Start the development server on `http://localhost:3000`:

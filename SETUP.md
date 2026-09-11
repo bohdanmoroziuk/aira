@@ -135,6 +135,14 @@ A running record of project configuration. Add each setup change here as it is m
 - pnpm gate: `vue-demi` is allow-listed in `pnpm-workspace.yaml` so its
   postinstall (which pins it to the installed Vue major) may run.
 
+### AI
+
+- `ai` + `@ai-sdk/openai` as runtime dependencies — Vercel AI SDK's model-agnostic
+  `generateText` and its OpenAI provider. Used in `server/services/ai.service.ts`
+  to build the model and generate the chat response for `server/api/ai.ts`.
+- `runtimeConfig.openaiApiKey` in `nuxt.config.ts`, sourced from `OPENAI_API_KEY`
+  — server-only, not exposed to the client (no matching key under `public`).
+
 ### Environment variables
 
 - `.env.example` (repository root) — template listing every env var the app
@@ -143,6 +151,8 @@ A running record of project configuration. Add each setup change here as it is m
   cp .env.example .env
   ```
 - `.env` and `.env.*` are gitignored; `.env.example` is the one exception.
+- `OPENAI_API_KEY` — OpenAI API key used by the `/api/ai` route to generate
+  chat responses. Get one from the OpenAI dashboard.
 
 ### Package metadata
 

@@ -1,13 +1,39 @@
+import { createOpenAIModel, generateChatResponse } from '../services/ai.service'
+
+const getErrorMessage = (error: unknown) => {
+  if (error instanceof Error) {
+    return error.message
+  }
+
+  if (typeof error === 'string') {
+    return error
+  }
+
+  return String(error)
+}
+
 export default defineEventHandler(async (event) => {
-  const body = await readBody(event)
-  const { messages } = body
+  try {
+    const body = await readBody(event)
+    const { messages } = body
 
-  const id = (messages.length + 1).toString()
-  const lastMessage = messages[messages.length - 1]
+    const openaiApiKey = useRuntimeConfig().openaiApiKey
+    const openaiModel = createOpenAIModel(openaiApiKey)
 
-  return {
-    id,
-    role: 'assistant',
-    content: `(server) You said: ${lastMessage.content}`,
+    const response = await generateChatResponse(openaiModel, messages)
+
+    return {
+      id: crypto.randomUUID(),
+      role: 'assistant',
+      content: response,
+    }
+  } catch (error) {
+    // FIXME: exposes the raw error message to the client with no server-side
+    // logging; log `error` and return a generic message once this route
+    // needs to be production-ready.
+    throw createError({
+      statusCode: 500,
+      statusMessage: getErrorMessage(error),
+    })
   }
 })

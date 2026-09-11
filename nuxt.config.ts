@@ -12,5 +12,20 @@ export default defineNuxtConfig({
   },
 
   css: ['~/assets/css/main.css'],
+
   compatibilityDate: '2025-07-15',
+
+  runtimeConfig: {
+    openaiApiKey: process.env.OPENAI_API_KEY,
+  },
+
+  vite: {
+    // Pre-bundle `debug`: it's pulled in lazily by a transitive AI SDK
+    // dependency, so Vite's scanner misses it at dev-server startup and only
+    // discovers it on the first chat request, forcing a re-optimization and
+    // a full-page reload. Listing it here avoids that.
+    optimizeDeps: {
+      include: ['debug'],
+    },
+  },
 })
