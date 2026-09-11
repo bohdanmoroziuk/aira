@@ -10,12 +10,12 @@ A running record of project configuration. Add each setup change here as it is m
 
 ## Environment
 
-| Tool | Version |
-|---|---|
+| Tool | Version                                                            |
+| ---- | ------------------------------------------------------------------ |
 | Node | >=22.14.0 (pinned via `.nvmrc`, enforced via `engines` + `.npmrc`) |
-| pnpm | 12.3.4 |
-| Nuxt | ^4.5.2 |
-| Vue | ^3.5.42 |
+| pnpm | 12.3.4                                                             |
+| Nuxt | ^4.5.2                                                             |
+| Vue  | ^3.5.42                                                            |
 
 ---
 
@@ -67,17 +67,100 @@ A running record of project configuration. Add each setup change here as it is m
   build/output dirs from the file watcher (VS Code's defaults already cover
   `node_modules`/`.git`; `.gitignore` + `search.useIgnoreFiles` already cover
   search, so only `coverage` and `pnpm-lock.yaml` are added there), uses the
-  workspace TypeScript version, and sets pnpm as the package manager. Settings
-  are reviewed for current relevance, not just valid syntax.
+  workspace TypeScript version, sets pnpm as the package manager, makes
+  Prettier the default formatter with format-on-save, applies ESLint autofixes
+  on save, and enables Tailwind IntelliSense for Nuxt UI (treat `.css` as
+  Tailwind, suggest inside strings, scan the `ui` prop and `defineAppConfig`),
+  and turns off the built-in CSS/LESS/SCSS validators (`css.validate`,
+  `less.validate`, `scss.validate: false`) — the Tailwind CSS IntelliSense
+  extension already covers `@apply`/`@reference`, so the built-in ones only
+  flag them as "Unknown at rule", including inside Vue SFC `<style>` blocks.
+  Settings are reviewed for current relevance, not just valid syntax.
 - `.vscode/extensions.json` — recommends the extensions this project is built
   around (Prettier, Vue Volar, Prisma, Tailwind CSS, ESLint) so contributors
   get a one-click install prompt, and marks conflicting/legacy ones as unwanted
   (Vetur and the deprecated Vue TypeScript plugin, both superseded by Volar).
 
+### Linting and formatting
+
+- `@nuxt/eslint` + `eslint` as devDependencies — the module wires ESLint into
+  Nuxt and generates a project-aware flat config (`.nuxt/eslint.config.mjs`,
+  gitignored) from the actual route/component/import setup.
+- `eslint.config.mjs` (repository root) — the real entry point: re-exports the
+  generated config through `withNuxt()`. Registered in `nuxt.config.ts` via
+  `modules: ['@nuxt/eslint']`.
+- The module's `stylistic` option is left off (its default): Prettier owns
+  formatting, so enabling the `@stylistic` rule set would only duplicate work
+  Prettier already does.
+- `eslint-config-prettier` is applied **last** in `eslint.config.mjs` as a
+  guard — if a formatting-related rule is ever added, it stays disabled so it
+  can't fight Prettier. ESLint keeps the correctness and Vue/Nuxt rules.
+- `prettier` as a devDependency is the single formatter. `.prettierrc.json`
+  pins the house style (`singleQuote`, no semicolons — matches the existing
+  code); `.prettierignore` skips generated output and the lockfile.
+- Scripts: `lint` (`eslint .`), `lint:fix` (`eslint . --fix`), `format`
+  (`prettier --write .`), `format:check` (`prettier --check .`).
+- pnpm gate: `unrs-resolver` (native resolver used by the ESLint import plugin)
+  is allow-listed in `pnpm-workspace.yaml` so its build script may run under
+  pnpm's blocked-by-default policy.
+
+### Git hooks
+
+- `husky` as a devDependency — manages Git hooks in-repo. The `prepare` script
+  (`"prepare": "husky"`) installs them automatically on `pnpm install`, so every
+  contributor gets the hooks without a manual step.
+- `.husky/pre-commit` runs `pnpm lint` (`eslint .`) before each commit, so lint
+  errors block the commit locally instead of only surfacing in CI.
+
 ### Nuxt
 
 - `nuxt.config.ts`: `compatibilityDate: '2025-07-15'`, `devtools.enabled: false`.
-- Scaffold: `app/app.vue` with `NuxtLayout` + `NuxtPage`.
+- `imports.dirs: ['gateways']` — auto-imports `app/gateways/*`, the layer that
+  wraps backend endpoints (`$fetch` calls) behind typed functions, so callers
+  never touch transport details.
+- Scaffold: `app/app.vue` wraps `NuxtLayout` + `NuxtPage` in `<UApp>`.
+
+### UI
+
+- `@nuxt/ui` + `tailwindcss` as runtime dependencies — the component library
+  (Reka UI + Tailwind CSS v4). Registered in `nuxt.config.ts` via
+  `modules: ['@nuxt/ui']`; it auto-registers `@nuxt/icon`, `@nuxt/fonts` and
+  `@nuxtjs/color-mode`, so those are not listed separately.
+- `app/assets/css/main.css` — the single stylesheet, loaded through
+  `css: ['~/assets/css/main.css']`. Holds only `@import 'tailwindcss'` and
+  `@import '@nuxt/ui'`; Tailwind v4 is configured in CSS, so there is no
+  `tailwind.config`.
+- `app/app.vue` wraps the tree in `<UApp>` — required for toasts, tooltips and
+  programmatic overlays.
+- `app.config.ts` (repository root) — Nuxt UI runtime theme. Overrides the
+  design tokens: `primary` is set to `violet` (replacing the Nuxt UI default
+  `green`) to give Aira a calm, distinctive brand accent, and `neutral` to
+  `slate` for a matching cool grey scale.
+- pnpm gate: `vue-demi` is allow-listed in `pnpm-workspace.yaml` so its
+  postinstall (which pins it to the installed Vue major) may run.
+
+### Markdown rendering
+
+- `@nuxtjs/mdc` as a runtime dependency — renders markdown (message content)
+  to HTML via `<MDC>`, used in `app/components/MarkdownRenderer.vue`.
+  Registered in `nuxt.config.ts` via `modules: ['@nuxtjs/mdc']`.
+- `mdc.highlight` in `nuxt.config.ts` — Shiki syntax highlighting for fenced
+  code blocks: `theme: 'material-theme-palenight'`, `langs` limited to the
+  languages actually used in this project (`html`, `css`, `javascript`,
+  `typescript`, `vue`, `markdown`) instead of Shiki's full bundle.
+- `vite.optimizeDeps.include` in `nuxt.config.ts` gained `@nuxtjs/mdc/runtime`
+  alongside the existing `debug` entry: it pulls in a separate pnpm copy of
+  `debug` that Vite's dependency scanner otherwise misses at dev-server
+  startup, which made the first `<MDC>` parse after sending a chat message
+  fail with "does not provide an export named 'default'" and render empty.
+
+### AI
+
+- `ai` + `@ai-sdk/openai` as runtime dependencies — Vercel AI SDK's model-agnostic
+  `generateText` and its OpenAI provider. Used in `server/services/ai.service.ts`
+  to build the model and generate the chat response for `server/api/ai.ts`.
+- `runtimeConfig.openaiApiKey` in `nuxt.config.ts`, sourced from `OPENAI_API_KEY`
+  — server-only, not exposed to the client (no matching key under `public`).
 
 ### Environment variables
 
@@ -87,6 +170,8 @@ A running record of project configuration. Add each setup change here as it is m
   cp .env.example .env
   ```
 - `.env` and `.env.*` are gitignored; `.env.example` is the one exception.
+- `OPENAI_API_KEY` — OpenAI API key used by the `/api/ai` route to generate
+  chat responses. Get one from the OpenAI dashboard.
 
 ### Package metadata
 

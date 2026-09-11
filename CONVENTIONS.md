@@ -1,7 +1,7 @@
 # Aira — Conventions
 
-Working agreements for this project. Follow them when changing configuration,
-tooling, or docs.
+Working agreements for this project. Follow them when changing code,
+configuration, tooling, or docs.
 
 ## Cross-platform
 
@@ -19,6 +19,18 @@ tooling, or docs.
 - TypeScript: stay on the **5.x** line. A bare `pnpm add -D typescript`
   resolves to the 7.x native port, which `vue-tsc` and `nuxt typecheck` do not
   support yet.
+
+## Types & naming
+
+- Cross-boundary types (shared by `app/` and `server/`) live in
+  `shared/types/*.ts` — top level only, so they are auto-imported and reachable
+  via `#shared`. App-only types go in `app/types/`.
+- Chat vocabulary:
+  - `message` — a `ChatMessage` object.
+  - `content` — the message body string, the `content` field of `ChatMessage`
+    (name kept to match the OpenAI / Anthropic payload shape).
+  - `text` — a raw message string outside a `ChatMessage` (e.g. the argument to
+    `sendMessage`). Never name a plain string `message`.
 
 ## Configuration settings
 
