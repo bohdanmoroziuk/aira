@@ -76,6 +76,10 @@ watch(() => messages, pinToBottom, { deep: true })
               {{ message.content }}
             </div>
           </div>
+
+          <template v-if="isStreaming">
+            <span class="inline-block mr-1 animate-pulse duration-1000"> &#9611; </span>
+          </template>
         </div>
 
         <!-- FIXME: position:fixed + max-width + translateX centering +
