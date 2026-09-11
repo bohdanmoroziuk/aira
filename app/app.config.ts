@@ -1,4 +1,5 @@
 export default defineAppConfig({
+  title: 'Aira',
   ui: {
     colors: {
       // Aira — "air / aura": a calm, intelligent AI assistant. Violet reads

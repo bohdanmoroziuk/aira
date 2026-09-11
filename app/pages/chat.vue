@@ -2,7 +2,7 @@
 const { chat, chatTitle, messages, isStreaming, sendMessage } = useChat()
 
 useHead({
-  title: chatTitle.value,
+  title: chatTitle,
 })
 </script>
 
