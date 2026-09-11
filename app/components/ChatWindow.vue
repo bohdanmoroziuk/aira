@@ -36,18 +36,10 @@ watch(() => messages, pinToBottom, { deep: true })
       <!-- TODO: use `!hasMessages` once the computed exists. -->
       <!-- TODO: after the layout refactor this branch becomes a placeholder
            inside the message area, leaving a single <ChatTextInput>. -->
-      <div
-        v-if="!messages?.length"
-        class="flex items-center justify-center min-h-full"
-      >
+      <div v-if="!messages?.length" class="flex items-center justify-center min-h-full">
         <div class="flex flex-col gap-8 w-full p-8 bg-elevated">
-          <h2 class="text-xl font-medium text-center text-muted">
-            Start your chat
-          </h2>
-          <ChatTextInput
-            :is-streaming="isStreaming"
-            @send-message="sendMessage"
-          />
+          <h2 class="text-xl font-medium text-center text-muted">Start your chat</h2>
+          <ChatTextInput :is-streaming="isStreaming" @send-message="sendMessage" />
         </div>
       </div>
 
@@ -80,9 +72,7 @@ watch(() => messages, pinToBottom, { deep: true })
             "
           >
             <!-- TODO: `[overflow-wrap:break-word]` duplicates `break-words`. -->
-            <div
-              class="text-default whitespace-pre-wrap break-words [overflow-wrap:break-word]"
-            >
+            <div class="text-default whitespace-pre-wrap break-words [overflow-wrap:break-word]">
               {{ message.content }}
             </div>
           </div>
@@ -109,10 +99,7 @@ watch(() => messages, pinToBottom, { deep: true })
               @click="() => scrollToBottom()"
             />
           </div>
-          <ChatTextInput
-            :is-streaming="isStreaming"
-            @send-message="sendMessage"
-          />
+          <ChatTextInput :is-streaming="isStreaming" @send-message="sendMessage" />
         </div>
       </template>
     </UContainer>

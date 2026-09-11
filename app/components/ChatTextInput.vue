@@ -9,8 +9,7 @@ const emit = defineEmits<{
 
 const TEXTAREA_REF = 'textareaRef'
 
-const { adjustTextareaHeight, focusTextarea } =
-  useAutoResizeTextarea(TEXTAREA_REF)
+const { adjustTextareaHeight, focusTextarea } = useAutoResizeTextarea(TEXTAREA_REF)
 const { text, noText, resetText } = useMessageDraft()
 
 const handleSendMessage = async () => {
