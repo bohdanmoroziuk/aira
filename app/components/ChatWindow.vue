@@ -73,7 +73,7 @@ watch(() => messages, pinToBottom, { deep: true })
           >
             <!-- TODO: `[overflow-wrap:break-word]` duplicates `break-words`. -->
             <div class="text-default whitespace-pre-wrap break-words [overflow-wrap:break-word]">
-              {{ message.content }}
+              <MarkdownRenderer :content="message.content" />
             </div>
           </div>
 

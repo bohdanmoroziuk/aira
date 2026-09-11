@@ -27,6 +27,9 @@
   "editor.quickSuggestions": { "strings": "on" },
   "tailwindCSS.classAttributes": ["class", "ui"],
   "tailwindCSS.classFunctions": ["defineAppConfig"],
+  "css.validate": false,
+  "less.validate": false,
+  "scss.validate": false,
 
   "js/ts.tsdk.path": "node_modules/typescript/lib",
   "js/ts.tsdk.promptToUseWorkspaceVersion": true,

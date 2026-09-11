@@ -70,7 +70,11 @@ A running record of project configuration. Add each setup change here as it is m
   workspace TypeScript version, sets pnpm as the package manager, makes
   Prettier the default formatter with format-on-save, applies ESLint autofixes
   on save, and enables Tailwind IntelliSense for Nuxt UI (treat `.css` as
-  Tailwind, suggest inside strings, scan the `ui` prop and `defineAppConfig`).
+  Tailwind, suggest inside strings, scan the `ui` prop and `defineAppConfig`),
+  and turns off the built-in CSS/LESS/SCSS validators (`css.validate`,
+  `less.validate`, `scss.validate: false`) — the Tailwind CSS IntelliSense
+  extension already covers `@apply`/`@reference`, so the built-in ones only
+  flag them as "Unknown at rule", including inside Vue SFC `<style>` blocks.
   Settings are reviewed for current relevance, not just valid syntax.
 - `.vscode/extensions.json` — recommends the extensions this project is built
   around (Prettier, Vue Volar, Prisma, Tailwind CSS, ESLint) so contributors
@@ -134,6 +138,21 @@ A running record of project configuration. Add each setup change here as it is m
   `slate` for a matching cool grey scale.
 - pnpm gate: `vue-demi` is allow-listed in `pnpm-workspace.yaml` so its
   postinstall (which pins it to the installed Vue major) may run.
+
+### Markdown rendering
+
+- `@nuxtjs/mdc` as a runtime dependency — renders markdown (message content)
+  to HTML via `<MDC>`, used in `app/components/MarkdownRenderer.vue`.
+  Registered in `nuxt.config.ts` via `modules: ['@nuxtjs/mdc']`.
+- `mdc.highlight` in `nuxt.config.ts` — Shiki syntax highlighting for fenced
+  code blocks: `theme: 'material-theme-palenight'`, `langs` limited to the
+  languages actually used in this project (`html`, `css`, `javascript`,
+  `typescript`, `vue`, `markdown`) instead of Shiki's full bundle.
+- `vite.optimizeDeps.include` in `nuxt.config.ts` gained `@nuxtjs/mdc/runtime`
+  alongside the existing `debug` entry: it pulls in a separate pnpm copy of
+  `debug` that Vite's dependency scanner otherwise misses at dev-server
+  startup, which made the first `<MDC>` parse after sending a chat message
+  fail with "does not provide an export named 'default'" and render empty.
 
 ### AI
 
