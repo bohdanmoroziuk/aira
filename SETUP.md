@@ -116,7 +116,7 @@ A running record of project configuration. Add each setup change here as it is m
 
 - `nuxt.config.ts`: `compatibilityDate: '2025-07-15'`, `devtools.enabled: false`.
 - `srcDir: 'src/app'`, `serverDir: 'src/server'`, `dir: { public: 'src/public',
-  shared: 'src/shared' }` — consolidates all source (`app/`, `server/`,
+shared: 'src/shared' }` — consolidates all source (`app/`, `server/`,
   `shared/`, `public/`) under `src/`, keeping only config files at the
   repository root. `~` still resolves to `srcDir` (`src/app`) automatically.
 - `imports.dirs: ['gateways']` — auto-imports `src/app/gateways/*`, the layer

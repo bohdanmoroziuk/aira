@@ -6,12 +6,18 @@ defineProps<{
 
 <template>
   <Suspense>
-    <MDC :value="content" class="markdown-content" />
+    <MDC
+      :value="content"
+      class="markdown-content"
+    />
 
     <template #fallback>
       <div class="markdown-content">
         {{ content }}
-        <span role="status" class="ml-2 inline-flex align-middle">
+        <span
+          role="status"
+          class="ml-2 inline-flex align-middle"
+        >
           <UIcon
             name="i-heroicons-arrow-path"
             class="size-4 shrink-0 animate-spin text-muted"

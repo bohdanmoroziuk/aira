@@ -19,5 +19,10 @@ useHead({
 </script>
 
 <template>
-  <ChatWindow :chat :messages :is-streaming @send-message="handleMessageSend" />
+  <ChatWindow
+    :chat
+    :messages
+    :is-streaming
+    @send-message="handleMessageSend"
+  />
 </template>

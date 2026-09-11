@@ -6,8 +6,5 @@
     "bradlc.vscode-tailwindcss",
     "dbaeumer.vscode-eslint"
   ],
-  "unwantedRecommendations": [
-    "octref.vetur",
-    "johnsoncodehk.vscode-typescript-vue-plugin"
-  ]
+  "unwantedRecommendations": ["octref.vetur", "johnsoncodehk.vscode-typescript-vue-plugin"]
 }
