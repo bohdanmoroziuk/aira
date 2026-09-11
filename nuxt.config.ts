@@ -1,37 +1,51 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  srcDir: 'src/app',
-  serverDir: 'src/server',
-  dir: {
-    public: 'src/public',
-    shared: 'src/shared',
-  },
-
-  modules: ['@nuxt/eslint', '@nuxt/ui', 'nuxt-typed-router', '@nuxtjs/mdc'],
-
-  mdc: {
-    highlight: {
-      theme: 'material-theme-palenight',
-      langs: ['html', 'css', 'javascript', 'typescript', 'vue', 'markdown'],
-    },
-  },
-
-  devtools: {
-    enabled: false,
-  },
+  modules: [
+    '@nuxt/eslint',
+    '@nuxt/ui',
+    'nuxt-typed-router',
+    '@nuxtjs/mdc',
+  ],
 
   // Auto-import gateway modules (app/gateways/*) alongside composables & utils.
   imports: {
     dirs: ['gateways'],
   },
 
+  devtools: {
+    enabled: false,
+  },
+
   css: ['~/assets/css/main.css'],
 
-  compatibilityDate: '2025-07-15',
+  mdc: {
+    highlight: {
+      theme: 'material-theme-palenight',
+      langs: [
+        'html',
+        'css',
+        'javascript',
+        'typescript',
+        'vue',
+        'markdown',
+      ],
+    },
+  },
 
   runtimeConfig: {
     openaiApiKey: process.env.OPENAI_API_KEY,
   },
+
+  dir: {
+    public: 'src/public',
+    shared: 'src/shared',
+  },
+
+  srcDir: 'src/app',
+
+  serverDir: 'src/server',
+
+  compatibilityDate: '2025-07-15',
 
   vite: {
     optimizeDeps: {
@@ -47,6 +61,17 @@ export default defineNuxtConfig({
         // renders empty.
         '@nuxtjs/mdc/runtime',
       ],
+    },
+  },
+
+  eslint: {
+    config: {
+      stylistic: {
+        // Match the codebase's existing Prettier-formatted style:
+        // always parenthesize single arrow params, cuddle `else`/`catch`.
+        arrowParens: true,
+        braceStyle: '1tbs',
+      },
     },
   },
 })

@@ -67,18 +67,20 @@ A running record of project configuration. Add each setup change here as it is m
   build/output dirs from the file watcher (VS Code's defaults already cover
   `node_modules`/`.git`; `.gitignore` + `search.useIgnoreFiles` already cover
   search, so only `coverage` and `pnpm-lock.yaml` are added there), uses the
-  workspace TypeScript version, sets pnpm as the package manager, makes
-  Prettier the default formatter with format-on-save, applies ESLint autofixes
-  on save, and enables Tailwind IntelliSense for Nuxt UI (treat `.css` as
-  Tailwind, suggest inside strings, scan the `ui` prop and `defineAppConfig`),
+  workspace TypeScript version, sets pnpm as the package manager, makes the
+  ESLint extension the default formatter with format-on-save
+  (`eslint.format.enable`) and applies ESLint autofixes on save
+  (`source.fixAll.eslint`), and enables Tailwind IntelliSense for Nuxt UI
+  (treat `.css` as Tailwind, suggest inside strings, scan the `ui` prop and
+  `defineAppConfig`),
   and turns off the built-in CSS/LESS/SCSS validators (`css.validate`,
   `less.validate`, `scss.validate: false`) — the Tailwind CSS IntelliSense
   extension already covers `@apply`/`@reference`, so the built-in ones only
   flag them as "Unknown at rule", including inside Vue SFC `<style>` blocks.
   Settings are reviewed for current relevance, not just valid syntax.
 - `.vscode/extensions.json` — recommends the extensions this project is built
-  around (Prettier, Vue Volar, Prisma, Tailwind CSS, ESLint) so contributors
-  get a one-click install prompt, and marks conflicting/legacy ones as unwanted
+  around (Vue Volar, Prisma, Tailwind CSS, ESLint) so contributors get a
+  one-click install prompt, and marks conflicting/legacy ones as unwanted
   (Vetur and the deprecated Vue TypeScript plugin, both superseded by Volar).
 
 ### Linting and formatting
@@ -89,17 +91,35 @@ A running record of project configuration. Add each setup change here as it is m
 - `eslint.config.mjs` (repository root) — the real entry point: re-exports the
   generated config through `withNuxt()`. Registered in `nuxt.config.ts` via
   `modules: ['@nuxt/eslint']`.
-- The module's `stylistic` option is left off (its default): Prettier owns
-  formatting, so enabling the `@stylistic` rule set would only duplicate work
-  Prettier already does.
-- `eslint-config-prettier` is applied **last** in `eslint.config.mjs` as a
-  guard — if a formatting-related rule is ever added, it stays disabled so it
-  can't fight Prettier. ESLint keeps the correctness and Vue/Nuxt rules.
-- `prettier` as a devDependency is the single formatter. `.prettierrc.json`
-  pins the house style (`singleQuote`, no semicolons — matches the existing
-  code); `.prettierignore` skips generated output and the lockfile.
-- Scripts: `lint` (`eslint .`), `lint:fix` (`eslint . --fix`), `format`
-  (`prettier --write .`), `format:check` (`prettier --check .`).
+- ESLint owns both linting and formatting — there is no separate formatter.
+  `nuxt.config.ts`'s `eslint.config.stylistic` option turns on the module's
+  bundled `@stylistic/eslint-plugin` rule set (indent, quotes, semicolons,
+  brace style, etc.), tuned with `arrowParens: true` and `braceStyle: '1tbs'`
+  to match the codebase's pre-existing (formerly Prettier-formatted) style.
+  `eslint.config.nuxt.sortConfigKeys` is explicitly turned back off — it's a
+  separate default this option enables that reorders every key in
+  `nuxt.config.ts` to match Nuxt's schema order, unrelated to formatting.
+- `eslint.config.mjs` adds rules `@stylistic` doesn't turn on by itself:
+  - `vue/max-attributes-per-line` (`singleline: 1, multiline: 1`) — a
+    component tag with more than one prop always wraps, one prop per line.
+  - `@stylistic/array-element-newline` / `object-curly-newline` /
+    `object-property-newline` (scoped to `ArrayExpression`/`ObjectExpression`,
+    plus `TSTypeLiteral`/`TSInterfaceBody` for the object rule) with
+    `minItems`/`minProperties: 2` — an array or object literal with more than
+    one element always wraps, one element per line. Scoped away from
+    destructuring patterns and import/export specifiers: those rules can't
+    split their inner list element-by-element, so forcing just the
+    brackets/braces there would leave a half-wrapped result.
+  - `@stylistic/array-bracket-newline: { multiline: true }` — once the two
+    rules above have split an array's elements onto their own lines, this
+    pushes the brackets onto their own lines too.
+  - `@stylistic/quotes: { avoidEscape: true }` — reproduces Prettier's actual
+    quote choice (pick whichever quote needs no escaping) instead of always
+    forcing single quotes and escaping apostrophes as `\'`.
+  - There is no equivalent of Prettier's `printWidth`: no ESLint/stylistic
+    rule can re-wrap arbitrary expressions or long strings/template
+    attributes the way Prettier did, so no line-length rule is configured.
+- Scripts: `lint` (`eslint .`), `lint:fix` (`eslint . --fix`).
 - pnpm gate: `unrs-resolver` (native resolver used by the ESLint import plugin)
   is allow-listed in `pnpm-workspace.yaml` so its build script may run under
   pnpm's blocked-by-default policy.

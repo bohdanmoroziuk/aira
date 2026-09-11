@@ -44,7 +44,9 @@ watch(() => messages, pinToBottom, { deep: true })
         class="flex items-center justify-center min-h-full"
       >
         <div class="flex flex-col gap-8 w-full p-8 bg-elevated">
-          <h2 class="text-xl font-medium text-center text-muted">Start your chat</h2>
+          <h2 class="text-xl font-medium text-center text-muted">
+            Start your chat
+          </h2>
           <ChatTextInput
             :is-streaming="isStreaming"
             @send-message="sendMessage"

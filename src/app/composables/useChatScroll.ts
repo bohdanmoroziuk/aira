@@ -47,8 +47,8 @@ export const useChatScroll = () => {
     function step(currentTime: number): void {
       const elapsed = currentTime - startTime
       const progress = Math.min(elapsed / duration, 1)
-      const easeInOutCubic =
-        progress < 0.5 ? 4 * progress * progress * progress : 1 - Math.pow(-2 * progress + 2, 3) / 2
+      const easeInOutCubic
+        = progress < 0.5 ? 4 * progress * progress * progress : 1 - Math.pow(-2 * progress + 2, 3) / 2
 
       if (scrollContainer.value) {
         scrollContainer.value.scrollTop = startScrollTop + distance * easeInOutCubic
