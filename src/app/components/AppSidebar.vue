@@ -5,7 +5,13 @@ const { chats } = defineProps<{
   chats: Chat[]
 }>()
 
+const emit = defineEmits<{
+  'create-chat': []
+}>()
+
 const { isSidebarOpen } = useSidebarState()
+
+const hasChats = computed(() => chats.length > 0)
 
 const toChatMenuItem = (chat: Chat): NavigationMenuItem => {
   return {
@@ -32,21 +38,42 @@ const chatMenuItems = computed(() => (
     :class="{ '-translate-x-full': !isSidebarOpen }"
   >
     <div class="overflow-y-auto p-4">
-      <div class="mb-4">
-        <div class="flex justify-between items-center mb-2">
-          <h2
-            class="text-sm font-semibold text-muted"
-          >
-            Chats
-          </h2>
+      <template v-if="hasChats">
+        <div class="mb-4">
+          <div class="flex justify-between items-center mb-2">
+            <h2
+              class="text-sm font-semibold text-muted"
+            >
+              Chats
+            </h2>
+          </div>
+          <UNavigationMenu
+            :items="chatMenuItems"
+            class="w-full mb-4"
+            orientation="vertical"
+            default-open
+          />
         </div>
-        <UNavigationMenu
-          :items="chatMenuItems"
-          class="w-full mb-4"
-          orientation="vertical"
-          default-open
+      </template>
+
+      <template v-else>
+        <UAlert
+          title="No chats"
+          description="Create a new chat to get started"
+          color="neutral"
+          variant="soft"
+          class="mt-2"
         />
-      </div>
+        <UButton
+          size="sm"
+          color="neutral"
+          variant="soft"
+          icon="i-heroicons-plus-small"
+          class="mt-2 w-full"
+          label="New chat"
+          @click="emit('create-chat')"
+        />
+      </template>
     </div>
   </aside>
 </template>
