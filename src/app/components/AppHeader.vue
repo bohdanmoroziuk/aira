@@ -1,6 +1,7 @@
 <script setup lang="ts">
 const appConfig = useAppConfig()
 const { startNewChat } = useChats()
+const { toggleSidebar } = useSidebarState()
 </script>
 
 <template>
@@ -12,6 +13,7 @@ const { startNewChat } = useChats()
         icon="i-lucide-menu"
         color="primary"
         variant="ghost"
+        @click="toggleSidebar"
       />
 
       <UButton
