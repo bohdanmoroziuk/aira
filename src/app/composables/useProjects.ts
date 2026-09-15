@@ -1,3 +1,7 @@
+import type { Project } from '~~/src/shared/types/chat'
+import { useState } from '#imports'
+import { generateUuid } from '~~/src/shared/utils/common.utils'
+
 export const useProjects = () => {
   const projects = useState<Project[]>('projects', () => [])
 

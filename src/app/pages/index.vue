@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { useAppConfig } from '#imports'
+import { useChats } from '~/composables/useChats'
+
 const appConfig = useAppConfig()
 const { startNewChat } = useChats()
 </script>

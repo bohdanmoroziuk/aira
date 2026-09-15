@@ -1,4 +1,10 @@
+import type { MaybeRefOrGetter } from 'vue'
+import type { Chat, ChatMessage, ChatRole } from '~~/src/shared/types/chat'
 import type { Optional } from '~~/src/shared/types/common'
+import { computed, ref, toValue } from 'vue'
+import { requestAssistantReply } from '~/gateways/ai.gateway'
+import { generateUuid, byId } from '~~/src/shared/utils/common.utils'
+import { useChats } from './useChats'
 
 const DEFAULT_CHAT_TITLE = 'Untitled Chat'
 

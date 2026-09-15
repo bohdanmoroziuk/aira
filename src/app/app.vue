@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useAppConfig, useHead } from '#imports'
+
 const appConfig = useAppConfig()
 
 useHead({

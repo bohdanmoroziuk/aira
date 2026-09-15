@@ -1,3 +1,7 @@
+import type { Chat, ChatMessage } from '~~/src/shared/types/chat'
+import { navigateTo, useState } from '#imports'
+import { generateUuid, byProp } from '~~/src/shared/utils/common.utils'
+
 type CreateChatOptions = Pick<Chat, 'projectId'>
 
 export const useChats = () => {
@@ -22,10 +26,10 @@ export const useChats = () => {
     return chats.value.filter(byProp('projectId', projectId))
   }
 
-  const startNewChat = (options: CreateChatOptions = {}) => {
+  const startNewChat = async (options: CreateChatOptions = {}) => {
     const chat = createChat(options)
 
-    navigateTo({
+    await navigateTo({
       name: 'chats-chatId',
       params: {
         chatId: chat.id,

@@ -1,3 +1,5 @@
+import { nextTick, onMounted, onUnmounted, onUpdated, ref, useTemplateRef } from 'vue'
+
 export const useChatScroll = () => {
   const scrollContainer = useTemplateRef<HTMLDivElement>('scrollContainer')
   const isAtBottom = ref(true)

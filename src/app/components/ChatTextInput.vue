@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import { nextTick, watch } from 'vue'
+import { useAutoResizeTextarea } from '~/composables/useAutoResizeTextarea'
+import { useMessageDraft } from '~/composables/useMessageDraft'
+
 const { isStreaming = false } = defineProps<{
   isStreaming?: boolean
 }>()

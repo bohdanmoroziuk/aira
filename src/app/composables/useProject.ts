@@ -1,4 +1,9 @@
-import { byId } from '~~/src/shared/utils/common'
+import type { MaybeRefOrGetter } from 'vue'
+import type { Project } from '~~/src/shared/types/chat'
+import type { Optional } from '~~/src/shared/types/common'
+import { computed, toValue } from 'vue'
+import { byId } from '~~/src/shared/utils/common.utils'
+import { useProjects } from './useProjects'
 
 export const useProject = (projectId: MaybeRefOrGetter<string>) => {
   const { projects } = useProjects()

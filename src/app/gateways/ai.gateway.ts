@@ -1,3 +1,6 @@
+import type { ChatMessage } from '~~/src/shared/types/chat'
+import { $fetch } from '#imports'
+
 /**
  * Gateway to the AI backend.
  *

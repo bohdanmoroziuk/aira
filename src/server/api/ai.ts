@@ -1,3 +1,6 @@
+import { defineEventHandler, readBody } from 'h3'
+import { createError, useRuntimeConfig } from '#imports'
+import { generateUuid } from '~~/src/shared/utils/common.utils'
 import { createOpenAIModel, generateChatResponse } from '../services/ai.service'
 
 const getErrorMessage = (error: unknown) => {

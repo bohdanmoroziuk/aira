@@ -7,9 +7,11 @@ export default defineNuxtConfig({
     '@nuxtjs/mdc',
   ],
 
-  // Auto-import gateway modules (app/gateways/*) alongside composables & utils.
+  // Auto-import disabled everywhere except components; import explicitly
+  // (or from '#imports') for composables, utils, gateways, Vue reactivity,
+  // and Nuxt/module composables alike.
   imports: {
-    dirs: ['gateways'],
+    autoImport: false,
   },
 
   devtools: {

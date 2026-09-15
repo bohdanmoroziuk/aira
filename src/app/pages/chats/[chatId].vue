@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useHead, useRoute, useToast } from '#imports'
+import { useChat } from '~/composables/useChat'
 import { ensureChatExists } from '~/guards/chat-exists.guard'
 
 const toast = useToast()

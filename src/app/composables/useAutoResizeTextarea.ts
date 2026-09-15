@@ -1,3 +1,5 @@
+import { onMounted, useTemplateRef } from 'vue'
+
 export const useAutoResizeTextarea = (refKey = 'textareaRef') => {
   const textareaRef = useTemplateRef<HTMLTextAreaElement>(refKey)
 
