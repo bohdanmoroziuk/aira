@@ -29,12 +29,22 @@ export const useChats = () => {
   const startNewChat = async (options: CreateChatOptions = {}) => {
     const chat = createChat(options)
 
-    await navigateTo({
-      name: 'chats-chatId',
-      params: {
-        chatId: chat.id,
-      },
-    })
+    const chatTo = chat.projectId
+      ? {
+          name: 'projects-projectId-chats-chatId',
+          params: {
+            projectId: chat.projectId,
+            chatId: chat.id,
+          },
+        }
+      : {
+          name: 'chats-chatId',
+          params: {
+            chatId: chat.id,
+          },
+        }
+
+    await navigateTo(chatTo)
   }
 
   const addMessage = (chatId: string, message: ChatMessage) => {
