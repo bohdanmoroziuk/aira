@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { useChats } from '~/composables/useChats'
+import { useSidebarState } from '~/composables/useSidebarState'
+
 const { chats, startNewChat } = useChats()
 const { isSidebarOpen } = useSidebarState()
 </script>
@@ -8,6 +11,7 @@ const { isSidebarOpen } = useSidebarState()
     <AppHeader />
     <AppSidebar
       :chats
+      :open="isSidebarOpen"
       @create-chat="startNewChat"
     />
     <main

@@ -1,4 +1,8 @@
 <script setup lang="ts">
+import { useAppConfig } from '#imports'
+import { useChats } from '~/composables/useChats'
+import { useSidebarState } from '~/composables/useSidebarState'
+
 const appConfig = useAppConfig()
 const { startNewChat } = useChats()
 const { toggleSidebar } = useSidebarState()
@@ -25,5 +29,6 @@ const { toggleSidebar } = useSidebarState()
     <h1 class="text-lg font-semibold">
       {{ appConfig.title }}
     </h1>
+    <div />
   </header>
 </template>

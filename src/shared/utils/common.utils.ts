@@ -1,3 +1,5 @@
+import type { Optional } from '~~/src/shared/types/common'
+
 /**
  * Resolves after the specified delay.
  *
@@ -39,3 +41,27 @@ export const byProp = <T, K extends keyof T>(prop: K, value: T[K]) => {
 export const byId = <T extends { id: string }>(id: T['id']) => {
   return byProp<T, 'id'>('id', id)
 }
+
+/**
+ * Checks whether a value is not undefined.
+ *
+ * @param value - Value to check.
+ * @returns True if the value is not undefined.
+ */
+export const isDefined = <T>(value: Optional<T>): value is T => value !== undefined
+
+/**
+ * Checks whether a value is undefined.
+ *
+ * @param value - Value to check.
+ * @returns True if the value is undefined.
+ */
+export const isUndefined = <T>(value: Optional<T>): value is undefined => value === undefined
+
+/**
+ * Checks whether an array has at least one element.
+ *
+ * @param array - Array to check.
+ * @returns True if the array has at least one element.
+ */
+export const isNonEmpty = <T>(array: T[]): boolean => array.length > 0
