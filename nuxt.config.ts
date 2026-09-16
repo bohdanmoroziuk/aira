@@ -1,12 +1,11 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  modules: [
-    '@nuxt/eslint',
-    '@nuxt/ui',
-    'nuxt-typed-router',
-    '@nuxtjs/mdc',
+  extends: [
+    './src/layers/base',
+    './src/layers/chat',
   ],
 
+  modules: ['@nuxt/eslint'],
   // Auto-import disabled everywhere except components; import explicitly
   // (or from '#imports') for composables, utils, gateways, Vue reactivity,
   // and Nuxt/module composables alike.
@@ -18,53 +17,20 @@ export default defineNuxtConfig({
     enabled: false,
   },
 
-  css: ['~/assets/css/main.css'],
-
-  mdc: {
-    highlight: {
-      theme: 'material-theme-palenight',
-      langs: [
-        'html',
-        'css',
-        'javascript',
-        'typescript',
-        'vue',
-        'markdown',
-      ],
-    },
-  },
-
-  runtimeConfig: {
-    openaiApiKey: process.env.OPENAI_API_KEY,
-  },
-
   dir: {
     public: 'src/public',
-    shared: 'src/shared',
   },
 
+  // All app/server code lives in the extended layers now — this folder no
+  // longer exists, which is fine (Nuxt treats a missing srcDir as empty).
+  // Must stay set explicitly though: leaving it unset lets a layer's own
+  // `srcDir: 'app'` leak through and get re-resolved against this rootDir
+  // (breaking `~`/`~~` for the whole project), and setting it to exactly
+  // `.` (rootDir) trips an unrelated Nuxt/TS bug in module config typing
+  // (e.g. `@nuxtjs/mdc`'s `mdc` key stops type-checking in layer configs).
   srcDir: 'src/app',
 
-  serverDir: 'src/server',
-
   compatibilityDate: '2025-07-15',
-
-  vite: {
-    optimizeDeps: {
-      include: [
-        // Pulled in lazily by a transitive AI SDK dependency; Vite's
-        // scanner misses it at dev-server startup and only discovers it
-        // on the first chat request, forcing a re-optimization mid-session.
-        'debug',
-        // Forces Vite to crawl (and pre-bundle `debug` for) this chain too
-        // — it pulls in a separate pnpm copy of `debug` from the entry
-        // above, so without this a newly sent message's <MDC> parse fails
-        // with "does not provide an export named 'default'" and silently
-        // renders empty.
-        '@nuxtjs/mdc/runtime',
-      ],
-    },
-  },
 
   eslint: {
     config: {
