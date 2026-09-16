@@ -8,5 +8,11 @@ export const createInMemoryChatRepository = (): ChatRepositoryPort => {
     getChats() {
       return Promise.resolve([...chats])
     },
+
+    createChat(input) {
+      chats.push(input)
+
+      return Promise.resolve({ ...input })
+    },
   }
 }
