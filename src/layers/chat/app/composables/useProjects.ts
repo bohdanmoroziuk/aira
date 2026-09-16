@@ -1,5 +1,5 @@
 import { useState, generateUuid } from '#imports'
-import type { Project } from '../../shared/types/chat'
+import type { Project } from '../../shared/types/chat.types'
 
 export const useProjects = () => {
   const projects = useState<Project[]>('projects', () => [

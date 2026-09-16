@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Chat, ChatMessage } from '../../shared/types/chat'
+import type { Chat, ChatMessage } from '../../shared/types/chat.types'
 import { watch } from 'vue'
 import { useChatScroll } from '../composables/useChatScroll'
 

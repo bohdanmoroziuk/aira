@@ -3,7 +3,7 @@ import { computed, toValue } from 'vue'
 import { useRoute } from 'vue-router'
 import { byProp, filterByDateRange, isNonEmpty, isUndefined, useChats, useProjects } from '#imports'
 import type { NavigationMenuItem } from '@nuxt/ui'
-import type { Chat, Project } from '../../shared/types/chat'
+import type { Chat, Project } from '../../shared/types/chat.types'
 
 const { open } = defineProps<{
   open: boolean

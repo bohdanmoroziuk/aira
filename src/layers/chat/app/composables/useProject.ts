@@ -1,6 +1,6 @@
 import type { MaybeRefOrGetter } from 'vue'
-import type { Project } from '../../shared/types/chat'
-import type { Optional } from '../../../base/shared/types/common'
+import type { Project } from '../../shared/types/chat.types'
+import type { Optional } from '../../../base/shared/types/common.types'
 import { computed, toValue } from 'vue'
 import { byId } from '#imports'
 import { useProjects } from './useProjects'

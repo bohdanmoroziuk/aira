@@ -1,4 +1,4 @@
-import type { ChatMessage } from '../../shared/types/chat'
+import type { ChatMessage } from '../../shared/types/chat.types'
 import { $fetch } from '#imports'
 
 /**

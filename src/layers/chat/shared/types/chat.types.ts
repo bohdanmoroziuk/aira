@@ -1,9 +1,13 @@
+import type { Nullable } from '#layers/base/shared/types/common.types'
+
 export type ChatRole = 'system' | 'user' | 'assistant'
 
 export type ChatMessage = {
   id: string
   role: ChatRole
   content: string
+  createdAt: Date
+  updatedAt: Date
 }
 
 export type Chat = {
@@ -20,4 +24,8 @@ export type Project = {
   name: string
   createdAt: Date
   updatedAt: Date
+}
+
+export type ProjectChat = Chat & {
+  project: Nullable<Project>
 }

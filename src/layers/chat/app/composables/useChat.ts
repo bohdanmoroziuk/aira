@@ -1,6 +1,6 @@
 import type { MaybeRefOrGetter } from 'vue'
-import type { Chat, ChatMessage, ChatRole } from '../../shared/types/chat'
-import type { Optional } from '../../../base/shared/types/common'
+import type { Chat, ChatMessage, ChatRole } from '../../shared/types/chat.types'
+import type { Optional } from '../../../base/shared/types/common.types'
 import { computed, ref, toValue } from 'vue'
 import { requestAssistantReply } from '../gateways/ai.gateway'
 import { generateUuid, byId } from '#imports'
@@ -29,6 +29,8 @@ export const useChat = (chatId: MaybeRefOrGetter<string>) => {
       id: generateUuid(),
       role,
       content: text,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     }
   }
 

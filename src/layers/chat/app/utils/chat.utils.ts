@@ -1,5 +1,5 @@
 import { isUndefined } from '#imports'
-import type { Chat } from '../../shared/types/chat'
+import type { Chat } from '../../shared/types/chat.types'
 
 export const isWithinDays = (date: Date, days: number) => {
   const now = new Date()

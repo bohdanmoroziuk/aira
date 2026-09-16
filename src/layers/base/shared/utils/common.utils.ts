@@ -1,4 +1,4 @@
-import type { Optional } from '../types/common'
+import type { Optional } from '../types/common.types'
 
 /**
  * Resolves after the specified delay.

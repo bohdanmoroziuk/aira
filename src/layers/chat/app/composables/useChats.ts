@@ -1,4 +1,4 @@
-import type { Chat, ChatMessage } from '../../shared/types/chat'
+import type { Chat, ChatMessage } from '../../shared/types/chat.types'
 import { navigateTo, useState, generateUuid, byProp } from '#imports'
 
 type CreateChatOptions = Pick<Chat, 'projectId'>
