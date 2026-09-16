@@ -3,12 +3,10 @@ import { computed, toValue } from 'vue'
 import { useRoute } from 'vue-router'
 import { byProp, filterByDateRange, isNonEmpty, isUndefined, useChats, useProjects } from '#imports'
 import type { NavigationMenuItem } from '@nuxt/ui'
-import type { Chat, Project } from '../../shared/types/chat.types'
+import type { Chat, Project } from '../../../chat/shared/types/chat.types'
+import { useSidebarState } from '../composables/useSidebarState'
 
-const { open } = defineProps<{
-  open: boolean
-}>()
-
+const { isSidebarOpen } = useSidebarState()
 const { chats, startNewChat } = useChats()
 const { projects, createProject } = useProjects()
 
@@ -120,7 +118,7 @@ const hasChatGroups = computed(() => chatGroups.value.length > 0)
 <template>
   <aside
     class="fixed top-16 left-0 bottom-0 w-64 transition-transform duration-300 z-40 bg-muted border-r-default border-r"
-    :class="{ '-translate-x-full': !open }"
+    :class="{ '-translate-x-full': !isSidebarOpen }"
   >
     <template v-if="hasProjects">
       <div class="mb-4 overflow-auto p-4 border-b border-default">

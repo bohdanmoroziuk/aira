@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { useAppConfig } from '#imports'
-import { useChats } from '../composables/useChats'
-import { useSidebarState } from '../../../base/app/composables/useSidebarState'
+import { useAppConfig } from 'nuxt/app'
+import { useSidebarState } from '../composables/useSidebarState'
+import { useChats } from '../../../chat/app/composables/useChats'
 
 const appConfig = useAppConfig()
-const { startNewChat } = useChats()
 const { toggleSidebar } = useSidebarState()
+const { startNewChat } = useChats()
 </script>
 
 <template>

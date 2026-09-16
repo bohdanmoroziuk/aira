@@ -1,4 +1,5 @@
-import { useState } from '#imports'
+import { readonly } from 'vue'
+import { useState } from 'nuxt/app'
 
 export const useSidebarState = () => {
   const isSidebarOpen = useState('sidebar-open', () => true)
@@ -8,7 +9,7 @@ export const useSidebarState = () => {
   }
 
   return {
-    isSidebarOpen,
+    isSidebarOpen: readonly(isSidebarOpen),
     toggleSidebar,
   }
 }
