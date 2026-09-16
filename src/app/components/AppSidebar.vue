@@ -1,17 +1,75 @@
 <script setup lang="ts">
-import type { NavigationMenuItem } from '@nuxt/ui'
-import type { Chat } from '~~/src/shared/types/chat'
 import { computed, toValue } from 'vue'
-import { filterByDateRange, isNonEmpty, isUndefined } from '#imports'
+import { useRoute } from 'vue-router'
+import { byProp, filterByDateRange, isNonEmpty, isUndefined, useChats, useProjects } from '#imports'
+import type { NavigationMenuItem } from '@nuxt/ui'
+import type { Chat, Project } from '~~/src/shared/types/chat'
 
-const { chats, open } = defineProps<{
-  chats: Chat[]
+const { open } = defineProps<{
   open: boolean
 }>()
 
-const emit = defineEmits<{
-  'create-chat': []
-}>()
+const { chats, startNewChat } = useChats()
+const { projects, createProject } = useProjects()
+
+const route = useRoute()
+const projectId = computed(() => route.params.projectId as string)
+
+const isCurrentProject = (id: string) => {
+  return projectId.value === id
+}
+
+const currentProjectChats = computed(() => {
+  return chats.value.filter(byProp('projectId', projectId.value))
+})
+
+const toProjectChatMenuItem = (project: Project, chat: Chat): NavigationMenuItem => {
+  return {
+    label: chat?.title ?? 'Untitled chat',
+    to: {
+      name: 'projects-projectId-chats-chatId',
+      params: {
+        projectId: project.id,
+        chatId: chat.id,
+      },
+    },
+    exact: true,
+    defaultOpen: false,
+  }
+}
+
+const toProjectMenuItem = (project: Project): NavigationMenuItem => {
+  const isCurrent = isCurrentProject(project.id)
+
+  return {
+    label: project.name,
+    to: {
+      name: 'projects-projectId',
+      params: {
+        projectId: project.id,
+      },
+    },
+    exact: true,
+    defaultOpen: isCurrent,
+    children: isCurrent
+      ? currentProjectChats.value.map((chat) => toProjectChatMenuItem(project, chat))
+      : [],
+  }
+}
+
+const projectMenuItems = computed(() => {
+  return projects.value.map(toProjectMenuItem)
+})
+
+const hasProjects = computed(() => {
+  return isNonEmpty(projects.value)
+})
+
+const handleProjectCreate = async () => {
+  const project = createProject()
+
+  await startNewChat({ projectId: project.id })
+}
 
 const toChatMenuItem = (chat: Chat): NavigationMenuItem => {
   return {
@@ -28,7 +86,7 @@ const toChatMenuItem = (chat: Chat): NavigationMenuItem => {
 }
 
 const unassignedChats = computed(() => {
-  return chats.filter((chat) => isUndefined(chat.projectId))
+  return chats.value.filter((chat) => isUndefined(chat.projectId))
 })
 
 const filterChats = (startDays: number, endDays?: number) => {
@@ -64,8 +122,35 @@ const hasChatGroups = computed(() => chatGroups.value.length > 0)
     class="fixed top-16 left-0 bottom-0 w-64 transition-transform duration-300 z-40 bg-muted border-r-default border-r"
     :class="{ '-translate-x-full': !open }"
   >
-    <div class="overflow-y-auto p-4">
-      <template v-if="hasChatGroups">
+    <template v-if="hasProjects">
+      <div class="mb-4 overflow-auto p-4 border-b border-default">
+        <div class="flex justify-between items-center mb-2">
+          <h2
+            class="text-sm font-semibold text-muted"
+          >
+            Projects
+          </h2>
+        </div>
+        <UNavigationMenu
+          :items="projectMenuItems"
+          class="w-full mb-4"
+          orientation="vertical"
+          default-open
+        />
+        <UButton
+          size="sm"
+          color="neutral"
+          variant="soft"
+          icon="i-heroicons-plus-small"
+          class="mt-2 w-full"
+          label="New project"
+          @click="handleProjectCreate"
+        />
+      </div>
+    </template>
+
+    <template v-if="hasChatGroups">
+      <div class="overflow-y-auto p-4">
         <div
           v-for="chatGroup in chatGroups"
           :key="chatGroup.label"
@@ -85,9 +170,11 @@ const hasChatGroups = computed(() => chatGroups.value.length > 0)
             default-open
           />
         </div>
-      </template>
+      </div>
+    </template>
 
-      <template v-else>
+    <template v-else>
+      <div class="overflow-y-auto p-4">
         <UAlert
           title="No chats"
           description="Create a new chat to get started"
@@ -102,9 +189,9 @@ const hasChatGroups = computed(() => chatGroups.value.length > 0)
           icon="i-heroicons-plus-small"
           class="mt-2 w-full"
           label="New chat"
-          @click="emit('create-chat')"
+          @click="() => startNewChat()"
         />
-      </template>
-    </div>
+      </div>
+    </template>
   </aside>
 </template>
