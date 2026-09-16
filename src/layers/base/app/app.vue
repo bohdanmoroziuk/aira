@@ -1,10 +1,14 @@
 <script setup lang="ts">
-import { useAppConfig, useHead } from '#imports'
+import { useAppConfig, useHead } from 'nuxt/app'
 
 const appConfig = useAppConfig()
 
 useHead({
-  titleTemplate: (title) => (title ? `${title} - ${appConfig.title}` : appConfig.title),
+  titleTemplate: (title) => (
+    title
+      ? `${title} - ${appConfig.title}`
+      : appConfig.title
+  ),
 })
 </script>
 

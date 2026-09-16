@@ -1,10 +1,11 @@
-import type { MaybeRefOrGetter } from 'vue'
-import type { TypedRouteLocationRaw } from '@typed-router'
-import type { Optional } from '../../shared/types/common'
 import { toValue, watch } from 'vue'
-import { isUndefined, navigateTo } from '#imports'
+import type { MaybeRefOrGetter } from 'vue'
+import type { RouteLocationRaw } from 'vue-router'
+import { navigateTo } from 'nuxt/app'
+import { isUndefined } from '../../shared/utils/common.utils'
+import type { Optional } from '../../shared/types/common.types'
 
-export function createExistsGuard<T>(redirectTo: TypedRouteLocationRaw) {
+export function createExistsGuard<T>(redirectTo: RouteLocationRaw) {
   return async function ensureExists(value: MaybeRefOrGetter<Optional<T>>) {
     if (isUndefined(toValue(value))) {
       await navigateTo(redirectTo)

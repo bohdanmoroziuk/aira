@@ -1,7 +1,8 @@
-import type { MaybeRefOrGetter } from 'vue'
-import type { Optional } from '../../shared/types/common'
 import { toValue, watch } from 'vue'
-import { createError, isUndefined, showError } from '#imports'
+import type { MaybeRefOrGetter } from 'vue'
+import { createError, showError } from 'nuxt/app'
+import { isUndefined } from '../../shared/utils/common.utils'
+import type { Optional } from '../../shared/types/common.types'
 
 export function createNotFoundGuard<T>(message: string) {
   return function ensureExists(value: MaybeRefOrGetter<Optional<T>>) {

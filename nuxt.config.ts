@@ -32,6 +32,12 @@ export default defineNuxtConfig({
 
   compatibilityDate: '2025-07-15',
 
+  typescript: {
+    tsConfig: {
+      include: ['../src/layers/*/app/**/*'],
+    },
+  },
+
   eslint: {
     config: {
       stylistic: {
