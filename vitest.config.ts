@@ -1,8 +1,26 @@
 import { defineConfig } from 'vitest/config'
 
+const e2eGlob = 'layers/**/server/api/**/*.test.ts'
+
 export default defineConfig({
   test: {
     environment: 'node',
-    include: ['layers/**/*.test.ts'],
+    projects: [
+      {
+        extends: true,
+        test: {
+          name: 'unit',
+          include: ['layers/**/*.test.ts'],
+          exclude: [e2eGlob],
+        },
+      },
+      {
+        extends: true,
+        test: {
+          name: 'e2e',
+          include: [e2eGlob],
+        },
+      },
+    ],
   },
 })

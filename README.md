@@ -54,10 +54,27 @@ pnpm typecheck
 
 ## Testing
 
-Run the test suite with Vitest:
+Run the whole test suite (unit + e2e) with Vitest:
 
 ```bash
 pnpm test
+```
+
+Tests are split into two Vitest projects. E2E tests are the ones under
+`layers/**/server/api/**` — they build the app and call the real endpoints, so
+they're slow (about a minute of build time per suite). Everything else is a unit
+test.
+
+Run only the fast unit tests:
+
+```bash
+pnpm test:unit
+```
+
+Run only the e2e tests:
+
+```bash
+pnpm test:e2e
 ```
 
 ## Linting and formatting
