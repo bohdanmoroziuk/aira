@@ -22,6 +22,12 @@ Start the development server on `http://localhost:3000`:
 pnpm dev
 ```
 
+## API documentation
+
+Browse the interactive API reference for the server routes at `/scalar`
+(e.g. [http://localhost:3000/scalar](http://localhost:3000/scalar) in
+development) — available in production builds too.
+
 ## Production
 
 Build the application for production:

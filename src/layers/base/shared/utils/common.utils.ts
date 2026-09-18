@@ -26,7 +26,7 @@ export const generateUuid = () => crypto.randomUUID()
  * @param value - Expected property value.
  * @returns A predicate that performs a strict equality comparison.
  */
-export const byProp = <T, K extends keyof T>(prop: K, value: T[K]) => {
+export function byProp<T, K extends keyof T>(prop: K, value: T[K]) {
   return (item: T) => {
     return item[prop] === value
   }

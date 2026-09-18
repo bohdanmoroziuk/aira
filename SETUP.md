@@ -212,6 +212,31 @@ shared: 'src/shared' }` — consolidates all source (`app/`, `server/`,
 - `runtimeConfig.openaiApiKey` in `nuxt.config.ts`, sourced from `OPENAI_API_KEY`
   — server-only, not exposed to the client (no matching key under `public`).
 
+### API documentation
+
+- `@scalar/nuxt` as a runtime dependency — renders an interactive OpenAPI
+  reference UI for the server routes at `/scalar`, so they can be browsed
+  and tried without a separate HTTP client. Available in every environment,
+  including production: `nitro.experimental.openAPI` (`nuxt.config.ts`)
+  turns on Nitro's `/_openapi.json` spec route, and the module sets
+  `nitro.openAPI.production` to `'prerender'`, so the spec is baked into the
+  production build rather than served live.
+- Registering the module surfaced a real build-breaking bug: Nuxt's
+  auto-import scanner (unimport) misparsed the two-type-parameter generic on
+  `byProp` in `common.utils.ts` (`export const byProp = <T, K extends keyof
+  T>(...)`), treating the `K` type parameter as a phantom named export and
+  failing every full build (`nuxt build`, and the `@nuxt/test-utils` e2e
+  specs' internal build) with `[MISSING_EXPORT] "K" is not exported`.
+  Renaming the type parameter didn't help — it's the multi-param generic
+  clause on an exported `const` arrow function that trips the scanner.
+  Rewriting `byProp` as `export function byProp<T, K extends keyof T>(...)`
+  (same signature, `function` keyword instead of a `const` arrow) avoided
+  the misparse entirely, with no change in behavior or call-site type
+  inference.
+- Individual routes currently have no `defineRouteMeta` annotations, so the
+  reference lists routes without per-route summaries/schemas; adding that
+  detail is left for a follow-up change.
+
 ### Environment variables
 
 - `.env.example` (repository root) — template listing every env var the app
