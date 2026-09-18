@@ -1,18 +1,32 @@
+import { generateUuid } from '#imports'
 import type { Chat } from '../../shared/types/chat.types'
-import type { ChatRepositoryPort } from '../ports/chat.repository.port'
+import type { ChatRepository } from '../ports/chat.repository.port'
 
-export const createInMemoryChatRepository = (): ChatRepositoryPort => {
+export const createInMemoryChatRepository = (): ChatRepository => {
   const chats: Chat[] = []
 
   return {
     getChats() {
-      return Promise.resolve([...chats])
+      return Promise.resolve(
+        chats
+          .slice()
+          .sort((a, b) => (b.updatedAt.getTime() - a.updatedAt.getTime())),
+      )
     },
 
-    createChat(input) {
-      chats.push(input)
+    createChat(data) {
+      const chat = {
+        id: generateUuid(),
+        title: data.title ?? 'Untitled Chat',
+        messages: [],
+        projectId: data.projectId,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }
 
-      return Promise.resolve({ ...input })
+      chats.push(chat)
+
+      return Promise.resolve({ ...chat })
     },
   }
 }

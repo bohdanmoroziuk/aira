@@ -14,7 +14,9 @@ export const createInMemoryProjectRepository = (): ProjectRepository => {
     )
   }
 
-  const findProjectById = (projectId: string) => {
+  const findProjectById = (projectId?: string) => {
+    if (isUndefined(projectId)) return Promise.resolve(null)
+
     const project = projects.find((project) => project.id === projectId)
 
     return Promise.resolve(project ?? null)

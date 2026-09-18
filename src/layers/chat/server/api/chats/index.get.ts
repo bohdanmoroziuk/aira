@@ -1,4 +1,4 @@
-import { defineEventHandler } from '#imports'
+import { defineEventHandler } from 'h3'
 import { getChats } from '../../chat.container'
 
 export default defineEventHandler(async () => {

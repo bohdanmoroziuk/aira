@@ -1,6 +1,11 @@
 import type { Chat } from '../../shared/types/chat.types'
 
-export type ChatRepositoryPort = {
+type CreateChatData = {
+  title?: string
+  projectId?: string
+}
+
+export type ChatRepository = {
   getChats: () => Promise<Chat[]>
-  createChat: (input: Chat) => Promise<Chat>
+  createChat: (data: CreateChatData) => Promise<Chat>
 }

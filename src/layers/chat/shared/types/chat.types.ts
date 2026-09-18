@@ -1,5 +1,3 @@
-import type { Nullable } from '#layers/base/shared/types/common.types'
-
 export type ChatRole = 'system' | 'user' | 'assistant'
 
 export type ChatMessage = {
@@ -27,5 +25,5 @@ export type Project = {
 }
 
 export type ProjectChat = Chat & {
-  project: Nullable<Project>
+  project?: Project
 }
