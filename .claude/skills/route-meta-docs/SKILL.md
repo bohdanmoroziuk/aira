@@ -1,6 +1,6 @@
 ---
 name: route-meta-docs
-description: Adds or updates `defineRouteMeta({ openAPI: ... })` on this repo's Nitro server routes (under `src/layers/*/server/api/**`, or `server/routes/**` if that pattern is ever used) so the Scalar/OpenAPI reference at `/scalar` shows real summaries, parameters, request bodies, and responses instead of bare method+path — derived strictly from what each handler (and its validator, if any) actually does. Use this when the user asks to document routes, add route/OpenAPI metadata, fill in `defineRouteMeta`, describe endpoints for Scalar/Swagger, or asks something like "додай route meta", "задокументуй ендпоінти", "заповни openAPI для роутів". Edits only `defineRouteMeta` calls (and the import it needs) inside route handler files — never touches handler logic, use-cases, or the API contract. If metadata can't be determined confidently from the code, it reports the mismatch instead of guessing.
+description: Adds or updates `defineRouteMeta({ openAPI: ... })` on this repo's Nitro server routes under `layers/*/server/api/**` so the Scalar/OpenAPI reference at `/scalar` shows real summaries, parameters, request bodies, and responses instead of bare method+path — derived strictly from what each handler (and its validator, if any) actually does. Use this when the user asks to document routes, add route/OpenAPI metadata, fill in `defineRouteMeta`, describe endpoints for Scalar/Swagger, or asks something like "додай route meta", "задокументуй ендпоінти", "заповни openAPI для роутів". Edits only `defineRouteMeta` calls (and the import it needs) inside route handler files — never touches handler logic, use-cases, or the API contract. If metadata can't be determined confidently from the code, it reports the mismatch instead of guessing.
 ---
 
 # Route Meta Docs
@@ -13,7 +13,7 @@ Scalar/OpenAPI support was wired up for this project's server routes without per
 
 ## What it does
 
-- **Finds server routes** under this repo's actual layout — `src/layers/*/server/api/**` (e.g. `src/layers/chat/server/api/ai.ts`, `src/layers/chat/server/api/chats/index.get.ts`) — and `src/layers/*/server/routes/**` if that pattern is ever introduced.
+- **Finds server routes** under this repo's actual layout — `layers/*/server/api/**` (e.g. `layers/chat/server/api/ai.post.ts`, `layers/chat/server/api/chats/index.get.ts`) — and `layers/*/server/routes/**` if that pattern is ever introduced.
 - **Infers HTTP method and path from the filename**, using Nitro's own convention (`index.get.ts` → `GET /chats`, `[id].delete.ts` → `DELETE /chats/{id}`, etc.) — but does not trust the filename alone when it's ambiguous (see below).
 - **Reads the handler fully** (and, transitively, the use-case/service it calls) to determine real behavior: what it reads from params/query/body, what it returns on success, and every error path it can produce.
 - **Adds or updates** a single `defineRouteMeta({ openAPI: ... })` call per route file — updates in place if one already exists, never adds a second.
@@ -26,7 +26,7 @@ Scalar/OpenAPI support was wired up for this project's server routes without per
 
 ### 1. Discover routes
 
-- List route files under every `src/layers/*/server/api/**` (and `src/layers/*/server/routes/**`, if present). As of this repo's current state that's `src/layers/chat/server/api/ai.ts`, `src/layers/chat/server/api/chats/index.get.ts`, and `src/layers/chat/server/api/chats/index.post.ts` — re-scan rather than assuming this list is still current.
+- List route files under every `layers/*/server/api/**` (and `layers/*/server/routes/**`, if present). As of this repo's current state that's `layers/chat/server/api/ai.post.ts`, `layers/chat/server/api/chats/index.get.ts`, and `layers/chat/server/api/chats/index.post.ts` — re-scan rather than assuming this list is still current.
 - For each file, infer the HTTP method and path from the filename using Nitro's convention. If the user pointed at specific routes instead of "all routes," scope to those.
 
 ### 2. Resolve method/path ambiguity honestly
@@ -39,7 +39,7 @@ For each route, before writing anything:
 - What does it read? — `getRouterParams`/`event.context.params` (path params), `getQuery` (query params), `readBody`/`readValidatedBody` (request body). Note the actual keys destructured/used, not a guessed full shape.
 - What does it call? — trace into any use-case/service (this repo's ports & adapters layers, e.g. `chat.container.ts` → `use-cases/*.use-case.ts`) far enough to know the real shape of what's returned and which of its failures surface back to the HTTP layer.
 - What does it return on success? — the actual object/array shape, from the `return` statement(s), not the route's name.
-- What errors can it produce? — every `createError({ statusCode, ... })` (or thrown/caught error mapped to one) in the handler, with the real status code and message pattern used (e.g. `ai.ts`'s catch-all 500 with a `FIXME` about the message it leaks — document the status code that's actually thrown, don't editorialize on the `FIXME` since fixing it is out of scope here).
+- What errors can it produce? — every `createError({ statusCode, ... })` (or thrown/caught error mapped to one) in the handler, with the real status code and message pattern used (e.g. `ai.post.ts`'s catch-all 500 with a `FIXME` about the message it leaks — document the status code that's actually thrown, don't editorialize on the `FIXME` since fixing it is out of scope here).
 
 ### 4. Cross-check against a validator, if one exists
 
@@ -50,13 +50,16 @@ For each route, before writing anything:
 
 - Search the route file for an existing `defineRouteMeta({ openAPI: ... })` call first. If found, **edit its `openAPI` object in place** — never add a second `defineRouteMeta` call to the same file (Nitro only honors one, and a duplicate is dead/conflicting code).
 - If none exists, add one as a top-level statement in the file, placed **after** `export default defineEventHandler(...)` (not before it, and not nested inside it) — this repo's convention puts the handler first so a reader sees the behavior before the metadata. Placement doesn't affect Nitro's build-time extraction (it statically scans the whole file for the `defineRouteMeta` call the same way Nuxt does for `definePageMeta`), so this is a style convention, not a functional requirement — but follow it consistently.
-- This repo disables blanket auto-import (`imports.autoImport: false` in `nuxt.config.ts`) and imports Nitro/Nuxt composables explicitly even where they'd otherwise auto-import — see `createError`/`useRuntimeConfig` in `ai.ts`. Follow the same convention: `import { defineRouteMeta } from '#imports'`, added to the file's existing import statement(s) rather than a new standalone one where it can be combined.
+- This repo uses Nuxt's default auto-imports. Import `defineRouteMeta` directly
+  from `nitropack/runtime`, though: it is a Nitro-only macro, and a direct
+  import keeps typed `$fetch` generation compatible with the app TypeScript
+  context.
 
 ### 6. Fill in each field — only what the code actually supports
 
 - **`summary`** — one short line, what the endpoint does in plain terms (e.g. "Create a new chat", not "Chats endpoint").
 - **`description`** — only add one when it says something `summary` doesn't (a constraint, a side effect, an error condition worth calling out); skip it when it would just restate the summary.
-- **`tags`** — check every other route already documented in this repo first and reuse its tag(s) for the same feature area (e.g. routes under `src/layers/chat/server/api/**` share a tag). If this is the very first route being documented, pick one plain, factual tag per feature layer (not a marketing label) and use it consistently on every subsequent route in that layer — that choice becomes the convention for later runs of this skill.
+- **`tags`** — check every other route already documented in this repo first and reuse its tag(s) for the same feature area (e.g. routes under `layers/chat/server/api/**` share a tag). If this is the very first route being documented, pick one plain, factual tag per feature layer (not a marketing label) and use it consistently on every subsequent route in that layer — that choice becomes the convention for later runs of this skill.
 - **`parameters`** — one entry per path/query parameter the handler actually reads (name, `in: 'path' | 'query'`, required, type). Do not add a parameter the handler never reads, and do not mark something optional/required opposite to how the code actually treats it (e.g. a path param is always required; a query param is optional unless the handler throws/defaults when it's missing).
 - **`requestBody`** — only for routes that call `readBody`/`readValidatedBody`. Shape it from the validator if one exists, otherwise from the actual destructured keys and their inferred TS types. Do not add a `requestBody` to a route that never reads one.
 - **`responses`** — one entry per status code the handler can actually produce: the success code with the real returned shape, and each distinct error code from step 3/4 with a short, factual description of when it occurs (e.g. "500 — the AI provider call failed", not a generic "Internal Server Error" boilerplate if the code's own message pattern says more). Match this repo's existing tone in code comments and `SETUP.md`/`README.md` — plain and specific, not marketing copy.
@@ -75,7 +78,9 @@ If, after reading the handler and any validator, a field still can't be determin
 
 For every route touched, re-read the final `defineRouteMeta` block against the handler one more time and confirm each field still matches: method/path ↔ filename+handler behavior, `parameters`/`requestBody` ↔ what's actually read (and the validator, if any), `responses` ↔ what's actually returned/thrown. Then run `pnpm typecheck` (the metadata is TypeScript-checked like any other code) and, if a dev server is reasonably available, check `/_openapi.json` or the Scalar UI at `/scalar` to confirm the new metadata actually renders as expected — this closes the loop between implementation, validation, and documentation rather than trusting the write alone.
 
-**Known, documented false positive — do not try to fix it:** `pnpm typecheck` will fail with `Module '"#imports"' has no exported member 'defineRouteMeta'` on any route file that imports it, even though the import is correct. Root cause (see `SETUP.md`'s "API documentation" entry for the full investigation): Nuxt generates `.nuxt/types/nitro-routes.d.ts` for `$fetch` return-type inference, which type-imports every server route file into the **app**-context TS project, where `#imports` correctly excludes server-only Nitro macros. The code is verified correct — it type-checks cleanly in isolation against `.nuxt/tsconfig.server.json` and works at runtime. Two apparent fixes were tried and ruled out: a matching `typescript.tsConfig.exclude` entry (no effect — `exclude` doesn't prune files pulled in via another included file's import graph) and `imports.autoImport: true` (no effect — it only controls auto-injection, not what `#imports`'s ambient declaration exports). When this error appears on a route you just added `defineRouteMeta` to, report it as this same known limitation rather than treating it as a new problem or attempting another fix.
+`pnpm typecheck` is expected to pass. If it reports that `defineRouteMeta` is
+missing from `#imports`, replace that import with the repository convention:
+`import { defineRouteMeta } from 'nitropack/runtime'`.
 
 ### 10. Report what happened
 

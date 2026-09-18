@@ -1,6 +1,6 @@
 ---
 name: code-review
-description: Reviews new and modified files in this repo for bugs, edge cases, and unnecessary complexity, checks them against this project's development approach (AGENTS.md, CONVENTIONS.md, naming, responsibility distribution across client/server, and the ports & adapters layout under src/layers/*/server), and produces a prioritized list of real fixes and improvements — never proposing a refactor just for its own sake, and never treating a stylistic preference as a defect. Use this when the user asks to review changes, check the diff, "перевір зміни", "рев'ю коду", "code review", asks whether the code has bugs or edge cases, whether it's too complex, whether naming/responsibilities are well split, or whether the backend follows ports & adapters. Read-only: never runs `git add`, never edits code, never commits.
+description: Reviews new and modified files in this repo for bugs, edge cases, and unnecessary complexity, checks them against this project's development approach (AGENTS.md, CONVENTIONS.md, naming, responsibility distribution across client/server, and the ports & adapters layout under layers/*/server), and produces a prioritized list of real fixes and improvements — never proposing a refactor just for its own sake, and never treating a stylistic preference as a defect. Use this when the user asks to review changes, check the diff, "перевір зміни", "рев'ю коду", "code review", asks whether the code has bugs or edge cases, whether it's too complex, whether naming/responsibilities are well split, or whether the backend follows ports & adapters. Read-only: never runs `git add`, never edits code, never commits.
 ---
 
 # Code Review
@@ -9,7 +9,7 @@ Review the current working-tree changes for correctness and fit with this projec
 
 ## Why this exists
 
-A review that only checks style produces noise; a review that only checks style compliance misses actual bugs. This skill does both, in order: real correctness problems and edge cases first, then fit with the architecture and conventions this repo has already committed to (`AGENTS.md`, `CONVENTIONS.md`, ports & adapters under `src/layers/*/server`). It deliberately does not turn into a refactor engine — `AGENTS.md` already says to keep changes focused and avoid unrelated refactoring, and a reviewer that ignores that just creates work nobody asked for.
+A review that only checks style produces noise; a review that only checks style compliance misses actual bugs. This skill does both, in order: real correctness problems and edge cases first, then fit with the architecture and conventions this repo has already committed to (`AGENTS.md`, `CONVENTIONS.md`, ports & adapters under `layers/*/server`). It deliberately does not turn into a refactor engine — `AGENTS.md` already says to keep changes focused and avoid unrelated refactoring, and a reviewer that ignores that just creates work nobody asked for.
 
 ## What it does
 
@@ -66,7 +66,7 @@ This covers naming, responsibility distribution, and (server-side) ports & adapt
 - Server: API handlers (`server/api/**`) stay thin (parse, call a use-case, shape the response) — no business logic, no direct persistence/SDK calls. Use-cases (`server/use-cases/`) depend only on port types. Repositories/services (`server/repositories/`, `server/services/`) are adapters only. Composition roots (`*.container.ts`) only wire, no logic.
 - Client: components (`app/components/**`) stay presentational, delegate to composables. Composables (`app/composables/use*.ts`) hold client state/orchestration, call gateways for I/O. Gateways (`app/gateways/*.gateway.ts`) wrap the server API, HTTP concerns only. Guards (`app/guards/*.guard.ts`) check one condition each. Pages (`app/pages/**`) compose, stay thin. Utils (`app/utils/*.utils.ts`) are pure.
 
-**Ports & adapters — server side only** (no equivalent layer exists on the client; client responsibility is covered above): For server-side code that talks to a database, external API, or SDK, check whether there's a `*.port.ts` type describing the capability, whether the concrete adapter implements it, and whether it's wired only in a `*.container.ts` rather than instantiated inline in a use-case or API handler. Established pattern: `src/layers/chat/server/ports/chat.repository.port.ts` → `repositories/in-memory-chat.repository.ts` → `use-cases/get-chats.use-case.ts` → `chat.container.ts` → `api/chats/index.get.ts`.
+**Ports & adapters — server side only** (no equivalent layer exists on the client; client responsibility is covered above): For server-side code that talks to a database, external API, or SDK, check whether there's a `*.port.ts` type describing the capability, whether the concrete adapter implements it, and whether it's wired only in a `*.container.ts` rather than instantiated inline in a use-case or API handler. Established pattern: `layers/chat/server/ports/chat.repository.port.ts` → `repositories/in-memory-chat.repository.ts` → `use-cases/get-chats.use-case.ts` → `chat.container.ts` → `api/chats/index.get.ts`.
 
 ### 6. Separate real problems from stylistic preferences
 

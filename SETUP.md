@@ -128,7 +128,7 @@ A running record of project configuration. Add each setup change here as it is m
 
 - No test runner or test files existed in the project before this. `vitest` and
   `@nuxt/test-utils` were added as devDependencies to test server routes (Nitro
-  `defineEventHandler` endpoints under `src/layers/*/server/api`) and the
+  `defineEventHandler` endpoints under `layers/*/server/api`) and the
   use-cases they call — UI/component testing is out of scope for now.
 - `@nuxt/test-utils` was chosen over hand-rolling H3 event mocks because it's
   the officially supported way to exercise real Nitro routes: `setup()` +
@@ -137,16 +137,15 @@ A running record of project configuration. Add each setup change here as it is m
   end. Its heavier peer dependencies (`jsdom`, `happy-dom`, `@vue/test-utils`,
   `playwright-core`, etc.) are all `optional` and were **not** installed, since
   none of them are needed without component/browser testing.
-- `vitest.config.ts` (repository root) uses `defineVitestConfig` from
-  `@nuxt/test-utils/config` with `test.environment: 'node'` — this single
+- `vitest.config.ts` (repository root) uses `defineConfig` from
+  `vitest/config` with `test.environment: 'node'` — this single
   `node` environment covers both plain unit tests (e.g. use-cases tested with
   fake repositories, no Nuxt runtime involved) and the `@nuxt/test-utils/e2e`
   integration tests, which just talk to a Nitro subprocess over HTTP and don't
   need a special "nuxt" test environment.
 - Test files are co-located next to the code they test (`*.test.ts`), matching
   the project's existing flat file layout, and import `describe`/`it`/`expect`
-  explicitly from `vitest` (`globals: true` was left off, consistent with
-  `imports.autoImport: false` in `nuxt.config.ts`).
+  explicitly from `vitest` because `globals: true` is intentionally disabled.
 - `test` script: `vitest run`.
 
 ### Git hooks
@@ -160,28 +159,29 @@ A running record of project configuration. Add each setup change here as it is m
 ### Nuxt
 
 - `nuxt.config.ts`: `compatibilityDate: '2025-07-15'`, `devtools.enabled: false`.
-- `srcDir: 'src/app'`, `serverDir: 'src/server'`, `dir: { public: 'src/public',
-shared: 'src/shared' }` — consolidates all source (`app/`, `server/`,
-  `shared/`, `public/`) under `src/`, keeping only config files at the
-  repository root. `~` still resolves to `srcDir` (`src/app`) automatically.
-- `imports.dirs: ['gateways']` — auto-imports `src/app/gateways/*`, the layer
-  that wraps backend endpoints (`$fetch` calls) behind typed functions, so
-  callers never touch transport details.
-- Scaffold: `src/app/app.vue` wraps `NuxtLayout` + `NuxtPage` in `<UApp>`.
+- `layers/base` owns application-wide UI, styling and markdown configuration;
+  `layers/chat` owns chat UI, server routes, AI runtime configuration and chat
+  gateways. Nuxt discovers both from the root `layers/` directory.
+- The project uses Nuxt 4's default root layout (`layers/`, `public/`) without
+  a custom `srcDir`, `serverDir` or `dir.public` override.
+- Nuxt's default auto-imports are enabled for Vue/Nuxt APIs, layer composables,
+  app/shared utilities and shared types. The chat layer additionally registers
+  `app/gateways`, which wraps backend endpoints behind typed functions.
+- Scaffold: `layers/base/app/app.vue` wraps `NuxtLayout` + `NuxtPage` in
+  `<UApp>`.
 
 ### UI
 
 - `@nuxt/ui` + `tailwindcss` as runtime dependencies — the component library
-  (Reka UI + Tailwind CSS v4). Registered in `nuxt.config.ts` via
+  (Reka UI + Tailwind CSS v4). Registered in `layers/base/nuxt.config.ts` via
   `modules: ['@nuxt/ui']`; it auto-registers `@nuxt/icon`, `@nuxt/fonts` and
   `@nuxtjs/color-mode`, so those are not listed separately.
-- `src/app/assets/css/main.css` — the single stylesheet, loaded through
-  `css: ['~/assets/css/main.css']`. Holds only `@import 'tailwindcss'` and
-  `@import '@nuxt/ui'`; Tailwind v4 is configured in CSS, so there is no
-  `tailwind.config`.
-- `src/app/app.vue` wraps the tree in `<UApp>` — required for toasts, tooltips
+- `layers/base/app/assets/css/main.css` — the single stylesheet, loaded by the
+  base layer. It declares Scalar's CSS layer order before importing Tailwind
+  and Nuxt UI, so their utilities take precedence without a Tailwind config.
+- `layers/base/app/app.vue` wraps the tree in `<UApp>` — required for toasts, tooltips
   and programmatic overlays.
-- `src/app/app.config.ts` — Nuxt UI runtime theme. Overrides the
+- `layers/base/app/app.config.ts` — Nuxt UI runtime theme. Overrides the
   design tokens: `primary` is set to `violet` (replacing the Nuxt UI default
   `green`) to give Aira a calm, distinctive brand accent, and `neutral` to
   `slate` for a matching cool grey scale.
@@ -191,26 +191,25 @@ shared: 'src/shared' }` — consolidates all source (`app/`, `server/`,
 ### Markdown rendering
 
 - `@nuxtjs/mdc` as a runtime dependency — renders markdown (message content)
-  to HTML via `<MDC>`, used in `src/app/components/MarkdownRenderer.vue`.
-  Registered in `nuxt.config.ts` via `modules: ['@nuxtjs/mdc']`.
-- `mdc.highlight` in `nuxt.config.ts` — Shiki syntax highlighting for fenced
+  to HTML via `<MDC>`, used in
+  `layers/base/app/components/MarkdownRenderer.vue`. Registered by the base
+  layer.
+- `mdc.highlight` in `layers/base/nuxt.config.ts` — Shiki syntax highlighting for fenced
   code blocks: `theme: 'material-theme-palenight'`, `langs` limited to the
   languages actually used in this project (`html`, `css`, `javascript`,
   `typescript`, `vue`, `markdown`) instead of Shiki's full bundle.
-- `vite.optimizeDeps.include` in `nuxt.config.ts` gained `@nuxtjs/mdc/runtime`
-  alongside the existing `debug` entry: it pulls in a separate pnpm copy of
-  `debug` that Vite's dependency scanner otherwise misses at dev-server
-  startup, which made the first `<MDC>` parse after sending a chat message
-  fail with "does not provide an export named 'default'" and render empty.
+- `vite.optimizeDeps.include` in the base layer includes `@nuxtjs/mdc/runtime`
+  and its non-hoisted `debug` dependency chain, which Vite's scanner otherwise
+  misses at dev-server startup and can make the first `<MDC>` render fail.
 
 ### AI
 
 - `ai` + `@ai-sdk/openai` as runtime dependencies — Vercel AI SDK's model-agnostic
   `generateText` and its OpenAI provider. Used in
-  `src/server/services/ai.service.ts` to build the model and generate the chat
-  response for `src/server/api/ai.ts`.
-- `runtimeConfig.openaiApiKey` in `nuxt.config.ts`, sourced from `OPENAI_API_KEY`
-  — server-only, not exposed to the client (no matching key under `public`).
+  `layers/chat/server/services/ai.service.ts` to build the model and generate
+  the chat response for `layers/chat/server/api/ai.post.ts`.
+- `runtimeConfig.openaiApiKey` in `layers/chat/nuxt.config.ts`, sourced from
+  `OPENAI_API_KEY` — server-only, not exposed to the client.
 
 ### API documentation
 
@@ -221,6 +220,13 @@ shared: 'src/shared' }` — consolidates all source (`app/`, `server/`,
   turns on Nitro's `/_openapi.json` spec route, and the module sets
   `nitro.openAPI.production` to `'prerender'`, so the spec is baked into the
   production build rather than served live.
+- `nitro.openAPI.meta` supplies the generated document's title, description
+  and API version. Nitro's built-in Scalar and Swagger pages are disabled
+  because `@scalar/nuxt` owns the public `/scalar` reference. Scalar's page
+  metadata is configured separately under `scalar.metaData`. The
+  `/scalar/**` route is client-rendered through `routeRules` to avoid a
+  hydration mismatch in Scalar's interactive UI; this does not affect SSR for
+  the application routes.
 - Registering the module surfaced a real build-breaking bug: Nuxt's
   auto-import scanner (unimport) misparsed the two-type-parameter generic on
   `byProp` in `common.utils.ts` (`export const byProp = <T, K extends keyof
@@ -238,35 +244,11 @@ shared: 'src/shared' }` — consolidates all source (`app/`, `server/`,
   schemas), placed after `export default defineEventHandler(...)` in each
   file — Nitro extracts it by statically scanning the whole file, the same
   way Nuxt extracts `definePageMeta`, so placement doesn't affect behavior.
-  `POST /api/ai` does not have one yet: it has no method suffix in its
-  filename (`ai.ts`), so Nitro's OpenAPI generator always labels it `GET` in
-  the spec regardless of any `defineRouteMeta` content — fixing that would
-  mean renaming the file to `ai.post.ts`, which also narrows Nitro's actual
-  method dispatch (today it accepts any method), a real behavior change
-  outside a docs-only task.
-- **Known false positive**: `pnpm typecheck` fails on any route file that
-  imports a Nitro-only composable via `#imports` (`defineRouteMeta` is the
-  first one used here) — `Module '"#imports"' has no exported member
-  '<name>'`. Root cause: Nuxt generates `.nuxt/types/nitro-routes.d.ts` to
-  give `$fetch('/api/chats')` accurate return-type inference, and that file
-  type-imports every server route file, which pulls each one into the
-  **app**-context TS project. There, `#imports` resolves to the app-level
-  declaration (`.nuxt/imports.d.ts`), which — correctly — doesn't include
-  server/Nitro-only macros, since they're meaningless in browser/app code.
-  Confirmed this isn't a real error: the same file type-checks cleanly in
-  isolation against the dedicated server tsconfig
-  (`.nuxt/tsconfig.server.json`, where `#imports` does resolve
-  `defineRouteMeta` correctly), and the code works correctly at runtime.
-  Ruled out two apparent fixes: adding a matching `typescript.tsConfig.exclude`
-  for `src/layers/*/server/**/*` (the parallel of the existing `include`
-  override below) has no effect, because `exclude` only prunes initial glob
-  discovery, not files pulled in via another included file's import graph —
-  `nitro-routes.d.ts` isn't excludable this way. Enabling `imports.autoImport`
-  also has no effect — it only controls whether Nuxt auto-injects missing
-  imports, not which symbols the `#imports` ambient declaration exports; it
-  doesn't add `defineRouteMeta` to `.nuxt/imports.d.ts` regardless. No fix is
-  applied — this is left as a documented, safe-to-ignore failure specific to
-  Nitro-only imports in route files.
+  `POST /api/ai` is method-scoped through its `ai.post.ts` filename but is not
+  documented with route metadata.
+- Route files import `defineRouteMeta` directly from `nitropack/runtime`. This
+  keeps the Nitro-only macro out of the app-level `#imports` declaration that
+  Nuxt consumes while generating typed `$fetch` routes.
 
 ### Environment variables
 
