@@ -124,6 +124,31 @@ A running record of project configuration. Add each setup change here as it is m
   is allow-listed in `pnpm-workspace.yaml` so its build script may run under
   pnpm's blocked-by-default policy.
 
+### Testing
+
+- No test runner or test files existed in the project before this. `vitest` and
+  `@nuxt/test-utils` were added as devDependencies to test server routes (Nitro
+  `defineEventHandler` endpoints under `src/layers/*/server/api`) and the
+  use-cases they call — UI/component testing is out of scope for now.
+- `@nuxt/test-utils` was chosen over hand-rolling H3 event mocks because it's
+  the officially supported way to exercise real Nitro routes: `setup()` +
+  `$fetch()` from `@nuxt/test-utils/e2e` start the actual app and hit real
+  endpoints over HTTP, verifying routing, layer merging and DI wiring end to
+  end. Its heavier peer dependencies (`jsdom`, `happy-dom`, `@vue/test-utils`,
+  `playwright-core`, etc.) are all `optional` and were **not** installed, since
+  none of them are needed without component/browser testing.
+- `vitest.config.ts` (repository root) uses `defineVitestConfig` from
+  `@nuxt/test-utils/config` with `test.environment: 'node'` — this single
+  `node` environment covers both plain unit tests (e.g. use-cases tested with
+  fake repositories, no Nuxt runtime involved) and the `@nuxt/test-utils/e2e`
+  integration tests, which just talk to a Nitro subprocess over HTTP and don't
+  need a special "nuxt" test environment.
+- Test files are co-located next to the code they test (`*.test.ts`), matching
+  the project's existing flat file layout, and import `describe`/`it`/`expect`
+  explicitly from `vitest` (`globals: true` was left off, consistent with
+  `imports.autoImport: false` in `nuxt.config.ts`).
+- `test` script: `vitest run`.
+
 ### Git hooks
 
 - `husky` as a devDependency — manages Git hooks in-repo. The `prepare` script

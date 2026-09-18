@@ -46,6 +46,14 @@ Run a full type check with `vue-tsc`:
 pnpm typecheck
 ```
 
+## Testing
+
+Run the test suite with Vitest:
+
+```bash
+pnpm test
+```
+
 ## Linting and formatting
 
 Check the codebase with ESLint (flat config, powered by `@nuxt/eslint`) — this
