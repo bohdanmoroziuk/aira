@@ -29,7 +29,7 @@ export const createInMemoryProjectRepository = (): ProjectRepository => {
 
     projects.push(project)
 
-    return Promise.resolve(project)
+    return Promise.resolve({ ...project })
   }
 
   const updateProject = (projectId: string, name: string): Promise<Nullable<Project>> => {
@@ -41,14 +41,16 @@ export const createInMemoryProjectRepository = (): ProjectRepository => {
 
     if (isUndefined(project)) return Promise.resolve(null)
 
-    projects[projectIndex] = {
+    const updatedProject: Project = {
       id: project.id,
       name,
       createdAt: project.createdAt,
       updatedAt: new Date(),
     }
 
-    return Promise.resolve(projects[projectIndex])
+    projects[projectIndex] = updatedProject
+
+    return Promise.resolve({ ...updatedProject })
   }
 
   const deleteProject = async (projectId: string) => {
