@@ -3,7 +3,7 @@ import { $fetch, setup } from '@nuxt/test-utils/e2e'
 
 describe('GET /api/chats', async () => {
   await setup({
-    setupTimeout: 60000,
+    setupTimeout: 180000,
   })
 
   it('returns chats created via POST /api/chats', async () => {

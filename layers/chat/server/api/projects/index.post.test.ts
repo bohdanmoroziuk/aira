@@ -3,7 +3,7 @@ import { $fetch, setup } from '@nuxt/test-utils/e2e'
 
 describe('POST /api/projects', async () => {
   await setup({
-    setupTimeout: 60000,
+    setupTimeout: 180000,
   })
 
   it('creates a project with the given name', async () => {

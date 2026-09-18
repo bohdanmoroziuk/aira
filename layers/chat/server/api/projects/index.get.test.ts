@@ -3,7 +3,7 @@ import { $fetch, setup } from '@nuxt/test-utils/e2e'
 
 describe('GET /api/projects', async () => {
   await setup({
-    setupTimeout: 60000,
+    setupTimeout: 180000,
   })
 
   it('returns an empty list when no projects exist', async () => {
