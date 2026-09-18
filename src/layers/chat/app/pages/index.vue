@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useAppConfig } from '#imports'
+import { useAppConfig } from 'nuxt/app'
 import { useChats } from '../composables/useChats'
 
 const appConfig = useAppConfig()

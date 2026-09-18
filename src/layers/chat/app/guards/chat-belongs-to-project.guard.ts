@@ -1,6 +1,6 @@
 import { computed, toValue } from 'vue'
 import type { MaybeRefOrGetter } from 'vue'
-import type { Chat } from '../../shared/types/chat'
+import type { Chat } from '../../shared/types/chat.types'
 import { ensureChatExists } from './chat-exists.guard'
 
 export function ensureChatBelongsToProject(
