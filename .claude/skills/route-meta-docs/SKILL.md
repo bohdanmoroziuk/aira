@@ -9,7 +9,7 @@ Add or refresh `defineRouteMeta({ openAPI: ... })` on this repo's server routes 
 
 ## Why this exists
 
-Scalar/OpenAPI support was wired up for this project's server routes without per-route metadata — `SETUP.md` explicitly notes "Individual routes currently have no `defineRouteMeta` annotations... left for a follow-up change." This skill is that follow-up, done repeatably and safely: metadata must reflect what the handler *actually* does, not what a route's name suggests it probably does, and it must never spill into changing the handler itself.
+Scalar/OpenAPI support was wired up for this project's server routes without per-route metadata — see `SETUP.md`'s "API documentation" entry for the history. This skill is the repeatable follow-up that fills that metadata in, route by route, safely: it must reflect what the handler *actually* does, not what a route's name suggests it probably does, and it must never spill into changing the handler itself.
 
 ## What it does
 
@@ -49,7 +49,7 @@ For each route, before writing anything:
 ### 5. Find or add `defineRouteMeta`
 
 - Search the route file for an existing `defineRouteMeta({ openAPI: ... })` call first. If found, **edit its `openAPI` object in place** — never add a second `defineRouteMeta` call to the same file (Nitro only honors one, and a duplicate is dead/conflicting code).
-- If none exists, add one as a top-level statement in the file, sibling to `export default defineEventHandler(...)` (not nested inside it) — matching how `defineRouteMeta`/`definePageMeta`-style Nitro/Nuxt macros are used elsewhere.
+- If none exists, add one as a top-level statement in the file, placed **after** `export default defineEventHandler(...)` (not before it, and not nested inside it) — this repo's convention puts the handler first so a reader sees the behavior before the metadata. Placement doesn't affect Nitro's build-time extraction (it statically scans the whole file for the `defineRouteMeta` call the same way Nuxt does for `definePageMeta`), so this is a style convention, not a functional requirement — but follow it consistently.
 - This repo disables blanket auto-import (`imports.autoImport: false` in `nuxt.config.ts`) and imports Nitro/Nuxt composables explicitly even where they'd otherwise auto-import — see `createError`/`useRuntimeConfig` in `ai.ts`. Follow the same convention: `import { defineRouteMeta } from '#imports'`, added to the file's existing import statement(s) rather than a new standalone one where it can be combined.
 
 ### 6. Fill in each field — only what the code actually supports
@@ -74,6 +74,8 @@ If, after reading the handler and any validator, a field still can't be determin
 ### 9. Verify consistency after writing
 
 For every route touched, re-read the final `defineRouteMeta` block against the handler one more time and confirm each field still matches: method/path ↔ filename+handler behavior, `parameters`/`requestBody` ↔ what's actually read (and the validator, if any), `responses` ↔ what's actually returned/thrown. Then run `pnpm typecheck` (the metadata is TypeScript-checked like any other code) and, if a dev server is reasonably available, check `/_openapi.json` or the Scalar UI at `/scalar` to confirm the new metadata actually renders as expected — this closes the loop between implementation, validation, and documentation rather than trusting the write alone.
+
+**Known, documented false positive — do not try to fix it:** `pnpm typecheck` will fail with `Module '"#imports"' has no exported member 'defineRouteMeta'` on any route file that imports it, even though the import is correct. Root cause (see `SETUP.md`'s "API documentation" entry for the full investigation): Nuxt generates `.nuxt/types/nitro-routes.d.ts` for `$fetch` return-type inference, which type-imports every server route file into the **app**-context TS project, where `#imports` correctly excludes server-only Nitro macros. The code is verified correct — it type-checks cleanly in isolation against `.nuxt/tsconfig.server.json` and works at runtime. Two apparent fixes were tried and ruled out: a matching `typescript.tsConfig.exclude` entry (no effect — `exclude` doesn't prune files pulled in via another included file's import graph) and `imports.autoImport: true` (no effect — it only controls auto-injection, not what `#imports`'s ambient declaration exports). When this error appears on a route you just added `defineRouteMeta` to, report it as this same known limitation rather than treating it as a new problem or attempting another fix.
 
 ### 10. Report what happened
 

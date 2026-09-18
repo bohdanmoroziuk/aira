@@ -44,6 +44,32 @@ export default defineNuxtConfig({
     },
   },
 
+  vite: {
+    optimizeDeps: {
+      // The Scalar API reference (@scalar/nuxt) lazily reaches a couple of
+      // CJS-only transitive deps that Vite's dependency scan doesn't always
+      // discover up front, so it falls back to serving the raw source file
+      // instead of a pre-bundled one — and those files' browser builds have
+      // no ESM default export, breaking with "does not provide an export
+      // named 'default'/'getContext'". Neither is hoisted to the root
+      // node_modules under pnpm (both have conflicting peer/version
+      // variants elsewhere in the tree), so a bare 'debug' or '@vercel/oidc'
+      // entry fails to resolve — the chained syntax below resolves each one
+      // through its real dependency path instead:
+      //  - debug: pulled in by micromark's tokenizer (used to render
+      //    markdown in the reference), reached here via @nuxtjs/mdc's own
+      //    remark-gfm dependency (same debug, same resolved path).
+      //  - @vercel/oidc: pulled in by Scalar's agent-chat feature's `ai`
+      //    dependency. @scalar/nuxt tries to add this one itself, but its
+      //    existsSync(rootDir/node_modules/@vercel/oidc) check also assumes
+      //    hoisting, so it silently no-ops under pnpm here too.
+      include: [
+        '@nuxtjs/mdc > remark-gfm > remark-parse > mdast-util-from-markdown > micromark > debug',
+        '@scalar/nuxt > @scalar/api-reference > @scalar/agent-chat > ai > @ai-sdk/gateway > @vercel/oidc',
+      ],
+    },
+  },
+
   typescript: {
     tsConfig: {
       include: ['../src/layers/*/app/**/*'],

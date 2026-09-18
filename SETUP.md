@@ -233,9 +233,40 @@ shared: 'src/shared' }` — consolidates all source (`app/`, `server/`,
   (same signature, `function` keyword instead of a `const` arrow) avoided
   the misparse entirely, with no change in behavior or call-site type
   inference.
-- Individual routes currently have no `defineRouteMeta` annotations, so the
-  reference lists routes without per-route summaries/schemas; adding that
-  detail is left for a follow-up change.
+- `GET /api/chats` and `POST /api/chats` have `defineRouteMeta({ openAPI:
+  ... })` annotations (summary, description, tags, request/response
+  schemas), placed after `export default defineEventHandler(...)` in each
+  file — Nitro extracts it by statically scanning the whole file, the same
+  way Nuxt extracts `definePageMeta`, so placement doesn't affect behavior.
+  `POST /api/ai` does not have one yet: it has no method suffix in its
+  filename (`ai.ts`), so Nitro's OpenAPI generator always labels it `GET` in
+  the spec regardless of any `defineRouteMeta` content — fixing that would
+  mean renaming the file to `ai.post.ts`, which also narrows Nitro's actual
+  method dispatch (today it accepts any method), a real behavior change
+  outside a docs-only task.
+- **Known false positive**: `pnpm typecheck` fails on any route file that
+  imports a Nitro-only composable via `#imports` (`defineRouteMeta` is the
+  first one used here) — `Module '"#imports"' has no exported member
+  '<name>'`. Root cause: Nuxt generates `.nuxt/types/nitro-routes.d.ts` to
+  give `$fetch('/api/chats')` accurate return-type inference, and that file
+  type-imports every server route file, which pulls each one into the
+  **app**-context TS project. There, `#imports` resolves to the app-level
+  declaration (`.nuxt/imports.d.ts`), which — correctly — doesn't include
+  server/Nitro-only macros, since they're meaningless in browser/app code.
+  Confirmed this isn't a real error: the same file type-checks cleanly in
+  isolation against the dedicated server tsconfig
+  (`.nuxt/tsconfig.server.json`, where `#imports` does resolve
+  `defineRouteMeta` correctly), and the code works correctly at runtime.
+  Ruled out two apparent fixes: adding a matching `typescript.tsConfig.exclude`
+  for `src/layers/*/server/**/*` (the parallel of the existing `include`
+  override below) has no effect, because `exclude` only prunes initial glob
+  discovery, not files pulled in via another included file's import graph —
+  `nitro-routes.d.ts` isn't excludable this way. Enabling `imports.autoImport`
+  also has no effect — it only controls whether Nuxt auto-injects missing
+  imports, not which symbols the `#imports` ambient declaration exports; it
+  doesn't add `defineRouteMeta` to `.nuxt/imports.d.ts` regardless. No fix is
+  applied — this is left as a documented, safe-to-ignore failure specific to
+  Nitro-only imports in route files.
 
 ### Environment variables
 
