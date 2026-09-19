@@ -1,4 +1,4 @@
-import type { ProjectRepository } from '../ports/project.repository.port'
+import type { ProjectRepository } from '../../ports/project.repository.port'
 
 export type CreateProjectInput = {
   name: string

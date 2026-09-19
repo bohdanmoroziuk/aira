@@ -1,6 +1,7 @@
 import { defineRouteMeta } from 'nitropack/runtime'
 import { updateProject } from '../../../chat.container'
-import { projectParamsSchema, updateProjectBodySchema } from '../../../schemas/project.schema'
+import { projectParamsSchema } from '../../../schemas/project.schema'
+import { updateProjectBodySchema } from '../../../flows/update-project'
 
 export default defineEventHandler(async (event) => {
   const params = await getValidatedRouterParams(event, projectParamsSchema.parse)

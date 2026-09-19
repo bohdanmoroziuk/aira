@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { makeGetProjectUseCase } from './get-project.use-case'
-import type { Project } from '../../shared/types/chat.types'
-import type { ProjectRepository } from '../ports/project.repository.port'
+import type { Project } from '../../../shared/types/chat.types'
+import type { ProjectRepository } from '../../ports/project.repository.port'
 
 const createProject = (overrides: Partial<Project> = {}): Project => ({
   id: 'project-1',

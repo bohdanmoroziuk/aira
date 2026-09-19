@@ -37,14 +37,14 @@ Scalar/OpenAPI support was wired up for this project's server routes without per
 
 For each route, before writing anything:
 - What does it read? — `getRouterParams`/`event.context.params` (path params), `getQuery` (query params), `readBody`/`readValidatedBody` (request body). Note the actual keys destructured/used, not a guessed full shape.
-- What does it call? — trace into any use-case/service (this repo's ports & adapters layers, e.g. `chat.container.ts` → `use-cases/*.use-case.ts`) far enough to know the real shape of what's returned and which of its failures surface back to the HTTP layer.
+- What does it call? — trace into any use-case/service (this repo's ports & adapters layers, e.g. `chat.container.ts` → `use-cases/*.use-case.ts` or `flows/<name>/<name>.use-case.ts`, with the flow's request schema in `flows/<name>/<name>.schema.ts` or the shared `schemas/*.schema.ts`) far enough to know the real shape of what's returned and which of its failures surface back to the HTTP layer.
 - What does it return on success? — the actual object/array shape, from the `return` statement(s), not the route's name.
 - What errors can it produce? — every `createError({ statusCode, ... })` (or thrown/caught error mapped to one) in the handler, with the real status code and message pattern used (e.g. `ai.post.ts`'s catch-all 500 with a `FIXME` about the message it leaks — document the status code that's actually thrown, don't editorialize on the `FIXME` since fixing it is out of scope here).
 
 ### 4. Cross-check against a validator, if one exists
 
-- If the route validates its input (Zod or another library — none of this repo's routes do yet, but check each one), read the schema directly and mirror its types, optionality, enums, and constraints in `parameters`/`requestBody` exactly. Do not hand-write a shape that merely looks plausible next to a schema you didn't fully read.
-- If there's no validator (the current state for every route in this repo), document the shape based strictly on how the handler actually destructures/uses the body — and don't imply a guarantee (required/optional, type) that nothing in the code actually enforces.
+- If the route validates its input (Zod or another library — the project routes do, via schemas in `flows/<name>/<name>.schema.ts` and the shared `schemas/project.schema.ts`; check each route), read the schema directly and mirror its types, optionality, enums, and constraints in `parameters`/`requestBody` exactly. Do not hand-write a shape that merely looks plausible next to a schema you didn't fully read.
+- If there's no validator (e.g. the chat routes), document the shape based strictly on how the handler actually destructures/uses the body — and don't imply a guarantee (required/optional, type) that nothing in the code actually enforces.
 
 ### 5. Find or add `defineRouteMeta`
 

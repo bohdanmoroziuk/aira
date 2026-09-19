@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { makeCreateProjectUseCase } from './create-project.use-case'
-import type { Project } from '../../shared/types/chat.types'
-import type { ProjectRepository } from '../ports/project.repository.port'
+import type { Project } from '../../../shared/types/chat.types'
+import type { ProjectRepository } from '../../ports/project.repository.port'
 
 const createFakeProjectRepository = (): ProjectRepository => ({
   getProjects: () => Promise.reject(new Error('not implemented')),

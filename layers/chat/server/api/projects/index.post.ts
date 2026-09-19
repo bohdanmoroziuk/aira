@@ -1,6 +1,6 @@
 import { defineRouteMeta } from 'nitropack/runtime'
 import { createProject } from '../../chat.container'
-import { createProjectBodySchema } from '../../schemas/project.schema'
+import { createProjectBodySchema } from '../../flows/create-project'
 
 export default defineEventHandler(async (event) => {
   const input = await readValidatedBody(event, createProjectBodySchema.parse)
