@@ -1,4 +1,4 @@
-import type { Optional } from '../types/common.types'
+import type { Nullable, Optional } from '../types/common.types'
 
 /**
  * Resolves after the specified delay.
@@ -57,6 +57,14 @@ export const isDefined = <T>(value: Optional<T>): value is T => value !== undefi
  * @returns True if the value is undefined.
  */
 export const isUndefined = <T>(value: Optional<T>): value is undefined => value === undefined
+
+/**
+ * Checks whether a value is null.
+ *
+ * @param value - Value to check.
+ * @returns True if the value is null.
+ */
+export const isNullable = <T>(value: Nullable<T>): value is null => value === null
 
 /**
  * Checks whether an array has at least one element.
