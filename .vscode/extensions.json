@@ -1,13 +1,9 @@
 {
   "recommendations": [
-    "esbenp.prettier-vscode",
     "Vue.volar",
     "Prisma.prisma",
     "bradlc.vscode-tailwindcss",
     "dbaeumer.vscode-eslint"
   ],
-  "unwantedRecommendations": [
-    "octref.vetur",
-    "johnsoncodehk.vscode-typescript-vue-plugin"
-  ]
+  "unwantedRecommendations": ["octref.vetur", "johnsoncodehk.vscode-typescript-vue-plugin"]
 }
