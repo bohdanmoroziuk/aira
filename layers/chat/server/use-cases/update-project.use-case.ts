@@ -1,4 +1,4 @@
-import { isNullable } from '../../../base/shared/utils/common.utils'
+import { isNullable } from '#layers/base/shared/utils/common.utils'
 import type { ProjectRepository } from '../ports/project.repository.port'
 
 export type UpdateProjectInput = {

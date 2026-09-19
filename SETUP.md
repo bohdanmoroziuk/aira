@@ -143,6 +143,12 @@ A running record of project configuration. Add each setup change here as it is m
   fake repositories, no Nuxt runtime involved) and the `@nuxt/test-utils/e2e`
   integration tests, which just talk to a Nitro subprocess over HTTP and don't
   need a special "nuxt" test environment.
+- `vitest.config.ts` also defines a `#layers` alias to `./layers`, mirroring the
+  `#layers/<name>` alias Nuxt generates. Plain Vitest has no Nuxt auto-imports,
+  so unit-tested server code (e.g. use-cases) imports cross-layer utilities
+  explicitly through it (`#layers/base/shared/utils/...`) instead of relative
+  `../../../base/...` paths. The path is built with `fileURLToPath` so it stays
+  valid on Windows.
 - Test files are co-located next to the code they test (`*.test.ts`), matching
   the project's existing flat file layout, and import `describe`/`it`/`expect`
   explicitly from `vitest` because `globals: true` is intentionally disabled.
