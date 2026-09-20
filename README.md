@@ -2,6 +2,8 @@
 
 ## Setup
 
+Use the Node.js version specified in `.nvmrc`. With nvm, run `nvm use`.
+
 Make sure to install dependencies:
 
 ```bash
