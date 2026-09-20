@@ -1,11 +1,7 @@
 import { describe, expect, it } from 'vitest'
-import { $fetch, fetch, setup } from '@nuxt/test-utils/e2e'
+import { $fetch, fetch } from '@nuxt/test-utils/e2e'
 
-describe('GET /api/projects/:projectId', async () => {
-  await setup({
-    setupTimeout: 180000,
-  })
-
+describe('GET /api/projects/:projectId', () => {
   const createProject = (name: string) => $fetch<Project>('/api/projects', {
     method: 'POST',
     body: { name },

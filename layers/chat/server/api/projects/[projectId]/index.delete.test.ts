@@ -1,11 +1,7 @@
 import { describe, expect, it } from 'vitest'
-import { $fetch, setup } from '@nuxt/test-utils/e2e'
+import { $fetch } from '@nuxt/test-utils/e2e'
 
-describe('DELETE /api/projects/:projectId', async () => {
-  await setup({
-    setupTimeout: 180000,
-  })
-
+describe('DELETE /api/projects/:projectId', () => {
   const createProject = (name: string) => $fetch<Project>('/api/projects', {
     method: 'POST',
     body: { name },

@@ -1,11 +1,7 @@
 import { describe, expect, it } from 'vitest'
-import { $fetch, setup } from '@nuxt/test-utils/e2e'
+import { $fetch } from '@nuxt/test-utils/e2e'
 
-describe('GET /api/projects', async () => {
-  await setup({
-    setupTimeout: 180000,
-  })
-
+describe('GET /api/projects', () => {
   it('returns an empty list when no projects exist', async () => {
     const projects = await $fetch('/api/projects')
 
