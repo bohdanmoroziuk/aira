@@ -27,6 +27,8 @@ export default defineConfig({
         test: {
           name: 'e2e',
           include: [e2eGlob],
+          // Each suite builds its own Nuxt app; parallel builds time out.
+          fileParallelism: false,
         },
       },
     ],
