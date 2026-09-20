@@ -22,9 +22,13 @@ const { startNewChat } = useChats()
         @click="startNewChat()"
       />
     </div>
+
     <h1 class="text-lg font-semibold">
       {{ appConfig.title }}
     </h1>
-    <div />
+
+    <div>
+      <ThemeSwitch />
+    </div>
   </header>
 </template>
