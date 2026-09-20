@@ -1,5 +1,7 @@
 # Aira
 
+[![CI](https://github.com/bohdanmoroziuk/aira/actions/workflows/ci.yml/badge.svg?event=pull_request)](https://github.com/bohdanmoroziuk/aira/actions/workflows/ci.yml)
+
 ## Setup
 
 Use the Node.js version specified in `.nvmrc`. With nvm, run `nvm use`.
@@ -93,3 +95,11 @@ Auto-fix what can be fixed:
 ```bash
 pnpm lint:fix
 ```
+
+## Continuous integration
+
+The [GitHub Actions CI workflow](.github/workflows/ci.yml) runs for pull
+requests targeting `dev` or `main`. It installs dependencies from the lockfile,
+then runs linting, type checking, the full test suite, and a production build.
+
+The `Quality` status check must pass before a pull request can be merged.
