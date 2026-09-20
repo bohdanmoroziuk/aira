@@ -99,7 +99,8 @@ pnpm lint:fix
 ## Continuous integration
 
 The [GitHub Actions CI workflow](.github/workflows/ci.yml) runs for pull
-requests targeting `dev` or `main`. It installs dependencies from the lockfile,
-then runs linting, type checking, the full test suite, and a production build.
+requests targeting `main`. It installs dependencies from the lockfile, then
+runs linting, type checking, the full test suite, and a production build.
 
-The `Quality` status check must pass before a pull request can be merged.
+Direct pushes to `dev` are allowed and do not trigger CI. The `Quality` status
+check must pass before `dev` can be merged into `main`.
