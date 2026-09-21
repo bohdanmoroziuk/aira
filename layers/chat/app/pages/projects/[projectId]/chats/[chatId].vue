@@ -6,10 +6,10 @@ const appConfig = useAppConfig()
 const route = useRoute('projects-projectId-chats-chatId')
 const projectId = computed(() => route.params.projectId as string)
 const chatId = computed(() => route.params.chatId as string)
-const { chat, messages, isStreaming, sendMessage } = useChat(chatId)
+const { chat, chatTitle, messages, isStreaming, sendMessage } = useChat(chatId)
 
 await ensureChatExists(chat)
-ensureChatBelongsToProject(chat, projectId)
+await ensureChatBelongsToProject(chat, projectId)
 
 const title = computed(() =>
   chat.value?.title
@@ -24,8 +24,8 @@ useHead({
 
 <template>
   <ChatWindow
+    :title="chatTitle"
     :is-streaming
-    :chat="chat!"
     :messages
     @send-message="sendMessage"
   />

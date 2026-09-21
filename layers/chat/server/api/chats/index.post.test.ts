@@ -1,11 +1,7 @@
 import { describe, expect, it } from 'vitest'
-import { $fetch, setup } from '@nuxt/test-utils/e2e'
+import { $fetch } from '@nuxt/test-utils/e2e'
 
-describe('POST /api/chats', async () => {
-  await setup({
-    setupTimeout: 180000,
-  })
-
+describe('POST /api/chats', () => {
   it('creates a chat with the given title and no project', async () => {
     const chat = await $fetch('/api/chats', {
       method: 'POST',

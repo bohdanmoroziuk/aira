@@ -1,5 +1,6 @@
-export const useChatScroll = () => {
-  const scrollContainer = useTemplateRef<HTMLDivElement>('scrollContainer')
+export const useChatScroll = (
+  scrollContainer: Readonly<Ref<HTMLElement | null>>,
+) => {
   const isAtBottom = ref(true)
   const showScrollButton = ref(false)
 

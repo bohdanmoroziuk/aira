@@ -65,9 +65,9 @@ pnpm test
 ```
 
 Tests are split into two Vitest projects. E2E tests are the ones under
-`layers/**/server/api/**` — they build the app and call the real endpoints, so
-they're slow (about a minute of build time per suite). Everything else is a unit
-test.
+`layers/**/server/api/**` — they call the real endpoints of a built app, so
+they're slower (the app is built once per run, without production-only
+extras). Everything else is a unit test.
 
 Run only the fast unit tests:
 

@@ -55,10 +55,10 @@ async function handleNewChat() {
 </script>
 
 <template>
-  <div class="p-4 h-[calc(100%-4rem)]">
+  <div class="flex h-full min-h-0 flex-col p-4">
     <div
       v-if="project"
-      class="flex items-start justify-between mb-6 pb-4 border-b border-default"
+      class="mb-6 flex shrink-0 items-start justify-between border-b border-default pb-4"
     >
       <div>
         <div class="flex items-center gap-2">
@@ -127,6 +127,11 @@ async function handleNewChat() {
       </UButton>
     </div>
 
-    <NuxtPage />
+    <div
+      class="min-h-0 flex-1"
+      :class="onChatPage ? 'overflow-hidden' : 'overflow-y-auto'"
+    >
+      <NuxtPage />
+    </div>
   </div>
 </template>

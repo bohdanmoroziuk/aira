@@ -148,8 +148,8 @@ const hasChatGroups = computed(() => chatGroups.value.length > 0)
       </div>
     </template>
 
-    <template v-if="hasChatGroups">
-      <div class="overflow-y-auto p-4">
+    <div class="overflow-y-auto p-4">
+      <template v-if="hasChatGroups">
         <div
           v-for="chatGroup in chatGroups"
           :key="chatGroup.label"
@@ -169,11 +169,9 @@ const hasChatGroups = computed(() => chatGroups.value.length > 0)
             default-open
           />
         </div>
-      </div>
-    </template>
+      </template>
 
-    <template v-else>
-      <div class="overflow-y-auto p-4">
+      <template v-else>
         <UAlert
           title="No chats"
           description="Create a new chat to get started"
@@ -181,16 +179,17 @@ const hasChatGroups = computed(() => chatGroups.value.length > 0)
           variant="soft"
           class="mt-2"
         />
-        <UButton
-          size="sm"
-          color="neutral"
-          variant="soft"
-          icon="i-heroicons-plus-small"
-          class="mt-2 w-full"
-          label="New chat"
-          @click="() => startNewChat()"
-        />
-      </div>
-    </template>
+      </template>
+
+      <UButton
+        size="sm"
+        color="neutral"
+        variant="soft"
+        icon="i-heroicons-plus-small"
+        class="mt-2 w-full"
+        label="New chat"
+        @click="() => startNewChat()"
+      />
+    </div>
   </aside>
 </template>

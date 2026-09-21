@@ -47,7 +47,7 @@ watch(
       :rows="1"
       placeholder="Type a message…"
       aria-label="Message"
-      class="w-full p-0 mr-6 resize-none bg-transparent outline-none hover:outline-none hover:shadow-md disabled:cursor-not-allowed"
+      class="w-full p-0 mr-6 resize-none bg-transparent outline-none hover:outline-none disabled:cursor-not-allowed"
       @input="adjustTextareaHeight"
       @keydown.enter.exact.prevent="handleSendMessage"
     />

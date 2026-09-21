@@ -69,9 +69,17 @@ constraints.
 - `vitest.config.ts` defines two Node-environment projects: `unit` for all tests
   except server API routes, and `e2e` for
   `layers/**/server/api/**/*.test.ts`.
-- E2E tests use `setup()` and `$fetch()` from `@nuxt/test-utils/e2e` to build the
-  application and call real Nitro endpoints. This verifies routing, layer
-  merging, and dependency-injection wiring without hand-written H3 mocks.
+- E2E tests call real Nitro endpoints with `$fetch()` from
+  `@nuxt/test-utils/e2e`. This verifies routing, layer merging, and
+  dependency-injection wiring without hand-written H3 mocks.
+- The Nuxt app is built once per e2e run in `vitest.e2e.global-setup.ts`
+  (into `.nuxt/test/e2e`, removed afterwards) with the OpenAPI spec prerender,
+  minification, and sourcemaps turned off, since the tests only call API
+  routes. `vitest.e2e.setup.ts` runs before
+  every e2e file and starts a fresh server from that build, so each file keeps
+  its own in-memory state without a rebuild. Test files therefore don't call
+  `setup()` themselves. The global setup restores `process.stdout/stderr` after
+  the build, because Nuxt's logger otherwise swallows Vitest's reporter output.
 - Browser/component peers are unnecessary because UI testing is currently out
   of scope. Tests are co-located as `*.test.ts` and import Vitest APIs
   explicitly; globals remain disabled.

@@ -27,8 +27,9 @@ export default defineConfig({
         test: {
           name: 'e2e',
           include: [e2eGlob],
-          // Each suite builds its own Nuxt app; parallel builds time out.
-          fileParallelism: false,
+          // The app is built once here; each file starts its own server from it.
+          globalSetup: ['./vitest.e2e.global-setup.ts'],
+          setupFiles: ['./vitest.e2e.setup.ts'],
         },
       },
     ],
