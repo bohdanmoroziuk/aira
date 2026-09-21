@@ -131,8 +131,8 @@ constraints.
 ### AI and validation
 
 - `ai` and `@ai-sdk/openai` provide model-agnostic text generation and the
-  OpenAI provider used by `layers/chat/server/services/ai.service.ts` and
-  `layers/chat/server/api/ai.post.ts`.
+  OpenAI provider used by `layers/chat/server/assistants/openai.assistant.ts`,
+  which backs the assistant-reply flow.
 - `layers/chat/nuxt.config.ts` maps `OPENAI_API_KEY` to server-only runtime
   config; the key is never exposed to the client.
 - Zod schemas validate project input at the flow boundary before use-cases
@@ -145,8 +145,7 @@ constraints.
   and Swagger UIs are disabled.
 - `/scalar/**` is client-rendered to avoid Scalar hydration mismatches without
   changing SSR for application routes.
-- Chat and project endpoints declare OpenAPI metadata with `defineRouteMeta`;
-  `POST /api/ai` is currently undocumented.
+- Chat and project endpoints declare OpenAPI metadata with `defineRouteMeta`.
 - Nitro finds `defineRouteMeta` by statically scanning the whole route file, so
   it may appear after `export default defineEventHandler(...)`.
 - Route files import `defineRouteMeta` from `nitropack/runtime` so this
@@ -172,7 +171,7 @@ constraints.
 
 - `.env.example` lists every required variable without secrets. Local `.env`
   and `.env.*` files are ignored except for that template.
-- `OPENAI_API_KEY` authorizes requests made by `POST /api/ai`. Copying the
+- `OPENAI_API_KEY` authorizes requests made by `POST /api/chats/:chatId/assistant-reply`. Copying the
   template and other setup commands are documented in `README.md`.
 
 ### Package metadata and license
