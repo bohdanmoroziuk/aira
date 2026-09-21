@@ -37,7 +37,7 @@ export const useChat = (chatId: MaybeRefOrGetter<string>) => {
     if (isStreaming.value) return
 
     try {
-      const message = await $fetch<ChatMessage>(`/api/chats/${chat.value.id}/messages`, {
+      const message = await $fetch<Nullable<ChatMessage>>(`/api/chats/${chat.value.id}/messages`, {
         method: 'post',
         body: {
           role: 'user',
@@ -45,12 +45,17 @@ export const useChat = (chatId: MaybeRefOrGetter<string>) => {
         },
       })
 
+      // The server answers 204 (no body) when it doesn't know the chat.
+      if (isNullable(message)) throw new Error('Chat not found')
+
       addMessage(toValue(chatId), message)
       isStreaming.value = true
 
-      const data = await requestAssistantReply(messages.value)
+      const reply = await requestAssistantReply(toValue(chatId))
 
-      addMessage(toValue(chatId), data)
+      if (isUndefined(reply)) throw new Error('No assistant reply was generated')
+
+      addMessage(toValue(chatId), reply)
     } catch (error) {
       // TODO: surface the failure to the user (toast / inline error message)
       //       and decide whether to keep or roll back the optimistic message.

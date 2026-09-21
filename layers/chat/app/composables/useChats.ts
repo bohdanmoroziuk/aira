@@ -18,15 +18,11 @@ export const useChats = () => {
     }
   }
 
-  const createChat = (options: CreateChatOptions = {}) => {
-    const chat = {
-      id: generateUuid(),
-      title: 'New chat',
-      messages: [],
-      projectId: options.projectId,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    }
+  const createChat = async (options: CreateChatOptions = {}) => {
+    const chat = await $fetch<Chat>('/api/chats', {
+      method: 'post',
+      body: { projectId: options.projectId },
+    })
 
     chats.value.push(chat)
 
@@ -38,7 +34,7 @@ export const useChats = () => {
   }
 
   const startNewChat = async (options: CreateChatOptions = {}) => {
-    const chat = createChat(options)
+    const chat = await createChat(options)
 
     const chatTo = chat.projectId
       ? {
