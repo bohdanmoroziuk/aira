@@ -23,6 +23,7 @@ const createMessage = (overrides: Partial<ChatMessage> = {}): ChatMessage => ({
 
 const createFakeChatRepository = (chats: Chat[]): ChatRepository => ({
   getChats: () => Promise.reject(new Error('not implemented')),
+  addChatMessage: () => Promise.reject(new Error('not implemented')),
   getChatMessages: (chatId) => {
     return Promise.resolve(chats.find((chat) => chat.id === chatId)?.messages ?? [])
   },

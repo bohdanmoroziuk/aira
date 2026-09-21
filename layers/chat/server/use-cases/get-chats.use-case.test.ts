@@ -22,6 +22,7 @@ const createProject = (overrides: Partial<Project> = {}): Project => ({
 })
 
 const createFakeChatRepository = (chats: Chat[]): ChatRepository => ({
+  addChatMessage: () => Promise.reject(new Error('not implemented')),
   getChatMessages: () => Promise.reject(new Error('not implemented')),
   getChats: () => Promise.resolve(chats),
   createChat: () => Promise.reject(new Error('not implemented')),

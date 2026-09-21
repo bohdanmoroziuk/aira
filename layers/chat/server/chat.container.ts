@@ -3,6 +3,7 @@ import { createInMemoryProjectRepository } from './repositories/in-memory-projec
 import { makeGetChatsUseCase } from './use-cases/get-chats.use-case'
 import { makeCreateChatUseCase } from './use-cases/create-chat.use-case'
 import { makeGetChatMessagesUseCase } from './flows/get-chat-messages'
+import { makeAddChatMessageUseCase } from './flows/add-chat-message'
 import { makeCreateProjectUseCase } from './flows/create-project'
 import { makeGetProjectsUseCase } from './flows/get-projects'
 import { makeGetProjectUseCase } from './flows/get-project'
@@ -14,6 +15,7 @@ const projectRepository = createInMemoryProjectRepository()
 
 export const getChats = makeGetChatsUseCase(chatRepository, projectRepository)
 export const getChatMessages = makeGetChatMessagesUseCase(chatRepository)
+export const addChatMessage = makeAddChatMessageUseCase(chatRepository)
 export const createChat = makeCreateChatUseCase(chatRepository, projectRepository)
 export const createProject = makeCreateProjectUseCase(projectRepository)
 export const getProjects = makeGetProjectsUseCase(projectRepository)

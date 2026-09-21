@@ -18,6 +18,25 @@ export const createInMemoryChatRepository = (): ChatRepository => {
       return Promise.resolve(chat ? chat.messages.slice() : [])
     },
 
+    addChatMessage(chatId, data) {
+      const chat = chats.find((chat) => chat.id === chatId)
+
+      if (!chat) return Promise.resolve(null)
+
+      const message = {
+        id: generateUuid(),
+        role: data.role,
+        content: data.content,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      }
+
+      chat.messages.push(message)
+      chat.updatedAt = message.createdAt
+
+      return Promise.resolve({ ...message })
+    },
+
     createChat(data) {
       const chat = {
         id: generateUuid(),

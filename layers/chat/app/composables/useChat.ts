@@ -32,24 +32,22 @@ export const useChat = (chatId: MaybeRefOrGetter<string>) => {
 
   const chatTitle = computed(() => chat.value?.title || DEFAULT_CHAT_TITLE)
 
-  const createMessage = (text: string, role: ChatRole): ChatMessage => {
-    return {
-      id: generateUuid(),
-      role,
-      content: text,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    }
-  }
-
   const sendMessage = async (text: string) => {
     if (!chat.value) return
     if (isStreaming.value) return
 
-    addMessage(toValue(chatId), createMessage(text, 'user'))
-    isStreaming.value = true
-
     try {
+      const message = await $fetch<ChatMessage>(`/api/chats/${chat.value.id}/messages`, {
+        method: 'post',
+        body: {
+          role: 'user',
+          content: text,
+        },
+      })
+
+      addMessage(toValue(chatId), message)
+      isStreaming.value = true
+
       const data = await requestAssistantReply(messages.value)
 
       addMessage(toValue(chatId), data)
