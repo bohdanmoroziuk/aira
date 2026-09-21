@@ -1,7 +1,7 @@
 import { createInMemoryChatRepository } from './repositories/in-memory-chat.repository'
 import { createInMemoryProjectRepository } from './repositories/in-memory-project.repository'
 import { makeGetChatsUseCase } from './use-cases/get-chats.use-case'
-import { makeCreateChatUseCase } from './use-cases/create-chat.use-case'
+import { makeCreateChatUseCase } from './flows/create-chat'
 import { makeGetChatMessagesUseCase } from './flows/get-chat-messages'
 import { createOpenAIAssistant } from './assistants/openai.assistant'
 import { makeAddChatMessageUseCase } from './flows/add-chat-message'

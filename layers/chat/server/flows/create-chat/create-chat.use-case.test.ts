@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import { makeCreateChatUseCase } from './create-chat.use-case'
-import type { Chat, Project } from '../../shared/types/chat.types'
-import type { ChatRepository } from '../ports/chat.repository.port'
-import type { ProjectRepository } from '../ports/project.repository.port'
+import type { Chat, Project } from '../../../shared/types/chat.types'
+import type { ChatRepository } from '../../ports/chat.repository.port'
+import type { ProjectRepository } from '../../ports/project.repository.port'
 
 const createChat = (overrides: Partial<Chat> = {}): Chat => ({
   id: 'chat-1',

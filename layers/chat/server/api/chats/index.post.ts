@@ -1,13 +1,11 @@
 import { defineRouteMeta } from 'nitropack/runtime'
 import { createChat } from '../../chat.container'
+import { createChatBodySchema } from '../../flows/create-chat'
 
 export default defineEventHandler(async (event) => {
-  const { title, projectId } = await readBody(event)
+  const input = await readValidatedBody(event, createChatBodySchema.parse)
 
-  const chat = await createChat({
-    title,
-    projectId,
-  })
+  const chat = await createChat(input)
 
   return chat
 })
@@ -16,7 +14,7 @@ defineRouteMeta({
   openAPI: {
     tags: ['Chats'],
     summary: 'Create a chat',
-    description: 'Creates a new chat, optionally titled and linked to a project. Falls back to "Untitled Chat" when no title is given, and to no project when `projectId` doesn\'t match an existing project. A request body is required — omitting it entirely fails with a 500.',
+    description: 'Creates a new chat, optionally titled and linked to a project. Falls back to "Untitled Chat" when no title is given, and to no project when `projectId` doesn\'t match an existing project. A request body is required.',
     requestBody: {
       required: true,
       content: {
@@ -38,6 +36,9 @@ defineRouteMeta({
       },
     },
     responses: {
+      400: {
+        description: 'The body is missing or invalid: `title` or `projectId` is present but not a string.',
+      },
       200: {
         description: 'Chat created successfully.',
         content: {

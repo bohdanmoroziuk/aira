@@ -1,6 +1,6 @@
-import { toProjectChat } from '../mappers/chat.mapper'
-import type { ChatRepository } from '../ports/chat.repository.port'
-import type { ProjectRepository } from '../ports/project.repository.port'
+import { toProjectChat } from '../../mappers/chat.mapper'
+import type { ChatRepository } from '../../ports/chat.repository.port'
+import type { ProjectRepository } from '../../ports/project.repository.port'
 
 export type CreateChatInput = {
   title?: string
