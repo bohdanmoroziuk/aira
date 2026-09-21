@@ -1,11 +1,12 @@
 import { defineRouteMeta } from 'nitropack/runtime'
-import { createChat } from '../../chat.container'
-import { createChatBodySchema } from '../../flows/create-chat'
+import { generateChatTitle } from '../../../chat.container'
+import { chatParamsSchema } from '../../../schemas/chat.schema'
+import { generateChatTitleBodySchema } from '../../../flows/generate-chat-title'
 
 export default defineEventHandler(async (event) => {
-  const input = await readValidatedBody(event, createChatBodySchema.parse)
-
-  const chat = await createChat(input)
+  const params = await getValidatedRouterParams(event, chatParamsSchema.parse)
+  const body = await readValidatedBody(event, generateChatTitleBodySchema.parse)
+  const chat = await generateChatTitle(params.chatId, body)
 
   return chat
 })
@@ -13,22 +14,31 @@ export default defineEventHandler(async (event) => {
 defineRouteMeta({
   openAPI: {
     tags: ['Chats'],
-    summary: 'Create a chat',
-    description: 'Creates a new chat, optionally titled and linked to a project. Falls back to "Untitled Chat" when no title is given, and to no project when `projectId` doesn\'t match an existing project. A request body is required.',
+    summary: 'Generate a chat title',
+    description: 'Generates a short title from the given user message text, saves it as the chat\'s `title` (refreshing `updatedAt`, and replacing any previous title), and returns the updated chat. Responds with 204 and no body when no chat matches `chatId`.',
+    parameters: [
+      {
+        in: 'path',
+        name: 'chatId',
+        required: true,
+        description: 'The id of the chat to title.',
+        schema: {
+          type: 'string',
+          format: 'uuid',
+        },
+      },
+    ],
     requestBody: {
       required: true,
       content: {
         'application/json': {
           schema: {
             type: 'object',
+            required: ['text'],
             properties: {
-              title: {
+              text: {
                 type: 'string',
-                description: 'Defaults to "Untitled Chat" when omitted.',
-              },
-              projectId: {
-                type: 'string',
-                description: 'Must match an existing project\'s id; otherwise the chat is created without a project.',
+                description: 'The user message to title the chat after. Must not be empty once surrounding whitespace is trimmed.',
               },
             },
           },
@@ -36,11 +46,8 @@ defineRouteMeta({
       },
     },
     responses: {
-      400: {
-        description: 'The body is missing or invalid: `title` or `projectId` is present but not a string.',
-      },
       200: {
-        description: 'Chat created successfully.',
+        description: 'Title generated and saved.',
         content: {
           'application/json': {
             schema: {
@@ -61,7 +68,7 @@ defineRouteMeta({
                 messages: {
                   type: 'array',
                   items: { type: 'object' },
-                  description: 'Always empty for a newly created chat.',
+                  description: 'Only the first message, as a preview; use `GET /api/chats/{chatId}/messages` for the full history.',
                 },
                 projectId: { type: 'string' },
                 createdAt: {
@@ -74,7 +81,7 @@ defineRouteMeta({
                 },
                 project: {
                   type: 'object',
-                  description: 'Present only when `projectId` matched an existing project.',
+                  description: 'Present only when the chat is linked to a project that still exists.',
                   required: [
                     'id',
                     'name',
@@ -101,6 +108,15 @@ defineRouteMeta({
             },
           },
         },
+      },
+      204: {
+        description: 'No chat exists with the given `chatId`; the response has no body.',
+      },
+      400: {
+        description: 'The body is invalid: `text` is missing, not a string, or empty once trimmed.',
+      },
+      500: {
+        description: 'The model request failed; the chat is left unchanged.',
       },
     },
   },

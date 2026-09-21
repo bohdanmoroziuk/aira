@@ -27,4 +27,22 @@ describe('POST /api/chats', () => {
       title: 'Untitled Chat',
     })
   })
+
+  it.each([
+    [
+      'the title is not a string',
+      { title: 123 },
+    ],
+    [
+      'the project id is not a string',
+      { projectId: 123 },
+    ],
+  ])('rejects the request with 400 when %s', async (_case, body) => {
+    await expect(
+      $fetch('/api/chats', {
+        method: 'POST',
+        body,
+      }),
+    ).rejects.toMatchObject({ statusCode: 400 })
+  })
 })

@@ -73,3 +73,36 @@ export const isNullable = <T>(value: Nullable<T>): value is null => value === nu
  * @returns True if the array has at least one element.
  */
 export const isNonEmpty = <T>(array: T[]): boolean => array.length > 0
+
+/**
+ * Checks whether an array has no elements.
+ *
+ * @param array - Array to check.
+ * @returns True if the array is empty.
+ */
+export const isEmpty = <T>(array: T[]): boolean => array.length === 0
+
+/**
+ * Returns the first element of an array.
+ *
+ * @param array - Array to take the element from.
+ * @returns The first element, or undefined if the array is empty.
+ */
+export const first = <T>(array: readonly T[]): Optional<T> => array[0]
+
+/**
+ * Returns the first element of an array wrapped in an array.
+ *
+ * @param array - Array to take the element from.
+ * @returns An array with the first element, or an empty array if the source is empty.
+ */
+export const firstOrEmpty = <T>(array: readonly T[]): T[] => array.slice(0, 1)
+
+/**
+ * Returns a fallback when a value is null or undefined.
+ *
+ * @param value - Value to check.
+ * @param fallback - Value to return when the value is null or undefined.
+ * @returns The value, or the fallback if the value is null or undefined.
+ */
+export const orDefault = <T>(value: Nullable<Optional<T>>, fallback: T): T => value ?? fallback

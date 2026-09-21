@@ -1,29 +1,45 @@
-type CreateChatOptions = Pick<Chat, 'projectId'>
+import { requestCreateChat } from '../gateways/chat.gateway'
+import { useGetChatsQuery } from '../queries/get-chats.query'
+
+type CreateChatInput = {
+  title?: string
+  projectId?: string
+}
 
 export const useChats = () => {
   const chats = useState<Chat[]>('chats', () => [])
 
-  const createChat = (options: CreateChatOptions = {}) => {
-    const chat = {
-      id: generateUuid(),
-      title: 'New chat',
-      messages: [],
-      projectId: options.projectId,
-      createdAt: new Date(),
-      updatedAt: new Date(),
+  const { data, execute, status } = useGetChatsQuery()
+
+  const getChats = async () => {
+    if (isIdle(status)) {
+      await execute()
+      chats.value = data.value
     }
+  }
+
+  const createChat = async (input: CreateChatInput = {}) => {
+    const chat = await requestCreateChat(input)
 
     chats.value.push(chat)
 
     return chat
   }
 
+  const updateChat = (updatedChat: Chat) => {
+    chats.value = chats.value.map((chat) => {
+      return chat.id === updatedChat.id
+        ? updatedChat
+        : chat
+    })
+  }
+
   const getProjectChats = (projectId: string) => {
     return chats.value.filter(byProp('projectId', projectId))
   }
 
-  const startNewChat = async (options: CreateChatOptions = {}) => {
-    const chat = createChat(options)
+  const startNewChat = async (options: CreateChatInput = {}) => {
+    const chat = await createChat(options)
 
     const chatTo = chat.projectId
       ? {
@@ -60,11 +76,25 @@ export const useChats = () => {
     return message
   }
 
+  const setMessages = (chatId: string, messages: ChatMessage[]) => {
+    chats.value = chats.value.map((chat) => {
+      return chat.id === chatId
+        ? {
+            ...chat,
+            messages,
+          }
+        : chat
+    })
+  }
+
   return {
     chats,
+    getChats,
     createChat,
+    updateChat,
     getProjectChats,
     startNewChat,
     addMessage,
+    setMessages,
   }
 }

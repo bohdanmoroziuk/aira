@@ -1,12 +1,5 @@
 export const useProjects = () => {
-  const projects = useState<Project[]>('projects', () => [
-    {
-      id: 'test',
-      name: 'New project',
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    },
-  ])
+  const projects = useState<Project[]>('projects', () => [])
 
   const createProject = () => {
     const project = {
