@@ -1,4 +1,5 @@
-import { requestAssistantReply } from '../gateways/ai.gateway'
+import { requestAddChatMessage, requestAssistantReply } from '../gateways/chat.gateway'
+import { useGetChatMessagesQuery } from '../queries/get-chat-messages.query'
 
 const DEFAULT_CHAT_TITLE = 'Untitled Chat'
 
@@ -15,10 +16,7 @@ export const useChat = (chatId: MaybeRefOrGetter<string>) => {
       : []
   ))
 
-  const { data, status, execute } = useFetch<ChatMessage[]>(`/api/chats/${toValue(chatId)}/messages`, {
-    default: () => [],
-    immediate: false,
-  })
+  const { data, status, execute } = useGetChatMessagesQuery(chatId)
 
   const getMessages = async () => {
     if (isUndefined(toValue(chat))) return
@@ -37,12 +35,9 @@ export const useChat = (chatId: MaybeRefOrGetter<string>) => {
     if (isStreaming.value) return
 
     try {
-      const message = await $fetch<Nullable<ChatMessage>>(`/api/chats/${chat.value.id}/messages`, {
-        method: 'post',
-        body: {
-          role: 'user',
-          content: text,
-        },
+      const message = await requestAddChatMessage(chat.value.id, {
+        role: 'user',
+        content: text,
       })
 
       // The server answers 204 (no body) when it doesn't know the chat.

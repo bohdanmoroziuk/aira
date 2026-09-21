@@ -1,15 +1,12 @@
+import { requestCreateChat } from '../gateways/chat.gateway'
+import { useGetChatsQuery } from '../queries/get-chats.query'
+
 type CreateChatOptions = Pick<Chat, 'projectId'>
 
 export const useChats = () => {
   const chats = useState<Chat[]>('chats', () => [])
 
-  const { data, execute, status } = useFetch<Chat[]>(
-    '/api/chats',
-    {
-      immediate: false,
-      default: () => [],
-    },
-  )
+  const { data, execute, status } = useGetChatsQuery()
 
   const getChats = async () => {
     if (status.value === 'idle') {
@@ -19,10 +16,7 @@ export const useChats = () => {
   }
 
   const createChat = async (options: CreateChatOptions = {}) => {
-    const chat = await $fetch<Chat>('/api/chats', {
-      method: 'post',
-      body: { projectId: options.projectId },
-    })
+    const chat = await requestCreateChat(options.projectId)
 
     chats.value.push(chat)
 
