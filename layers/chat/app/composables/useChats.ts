@@ -3,6 +3,21 @@ type CreateChatOptions = Pick<Chat, 'projectId'>
 export const useChats = () => {
   const chats = useState<Chat[]>('chats', () => [])
 
+  const { data, execute, status } = useFetch<Chat[]>(
+    '/api/chats',
+    {
+      immediate: false,
+      default: () => [],
+    },
+  )
+
+  const getChats = async () => {
+    if (status.value === 'idle') {
+      await execute()
+      chats.value = data.value
+    }
+  }
+
   const createChat = (options: CreateChatOptions = {}) => {
     const chat = {
       id: generateUuid(),
@@ -60,11 +75,24 @@ export const useChats = () => {
     return message
   }
 
+  const setMessages = (chatId: string, messages: ChatMessage[]) => {
+    chats.value = chats.value.map((chat) => {
+      return chat.id === chatId
+        ? {
+            ...chat,
+            messages,
+          }
+        : chat
+    })
+  }
+
   return {
     chats,
+    getChats,
     createChat,
     getProjectChats,
     startNewChat,
     addMessage,
+    setMessages,
   }
 }

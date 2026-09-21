@@ -12,6 +12,12 @@ export const createInMemoryChatRepository = (): ChatRepository => {
       )
     },
 
+    getChatMessages(chatId) {
+      const chat = chats.find((chat) => chat.id === chatId)
+
+      return Promise.resolve(chat ? chat.messages.slice() : [])
+    },
+
     createChat(data) {
       const chat = {
         id: generateUuid(),

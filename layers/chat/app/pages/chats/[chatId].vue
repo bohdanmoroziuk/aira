@@ -4,9 +4,10 @@ import { ensureChatExists } from '../../guards/chat-exists.guard'
 const toast = useToast()
 const route = useRoute('chats-chatId')
 const chatId = route.params.chatId as string
-const { chat, chatTitle, messages, isStreaming, sendMessage } = useChat(chatId)
+const { chat, chatTitle, messages, isStreaming, sendMessage, getMessages } = useChat(chatId)
 
 await ensureChatExists(chat)
+await getMessages()
 
 const handleMessageSend = async (text: string) => {
   try {

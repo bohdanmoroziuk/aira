@@ -3,7 +3,7 @@ import { requestAssistantReply } from '../gateways/ai.gateway'
 const DEFAULT_CHAT_TITLE = 'Untitled Chat'
 
 export const useChat = (chatId: MaybeRefOrGetter<string>) => {
-  const { chats, addMessage } = useChats()
+  const { chats, addMessage, setMessages } = useChats()
 
   const chat = computed<Optional<Chat>>(() => (
     chats.value.find(byId(toValue(chatId)))
@@ -14,6 +14,20 @@ export const useChat = (chatId: MaybeRefOrGetter<string>) => {
       ? chat.value.messages
       : []
   ))
+
+  const { data, status, execute } = useFetch<ChatMessage[]>(`/api/chats/${toValue(chatId)}/messages`, {
+    default: () => [],
+    immediate: false,
+  })
+
+  const getMessages = async () => {
+    if (isUndefined(toValue(chat))) return
+    if (status.value !== 'idle') return
+
+    await execute()
+    setMessages(chat.value!.id, data.value)
+  }
+
   const isStreaming = ref(false)
 
   const chatTitle = computed(() => chat.value?.title || DEFAULT_CHAT_TITLE)
@@ -51,10 +65,11 @@ export const useChat = (chatId: MaybeRefOrGetter<string>) => {
   return {
     chat,
     chatTitle,
-    messages,
-    addMessage,
     // TODO: return readonly(isStreaming) so consumers can't flip it.
     isStreaming,
+    messages,
+    addMessage,
     sendMessage,
+    getMessages,
   }
 }

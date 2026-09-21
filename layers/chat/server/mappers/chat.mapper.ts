@@ -1,9 +1,12 @@
+import { firstOrEmpty, orDefault } from '#layers/base/shared/utils/common.utils'
+
 export const toProjectChat = (
   chat: Chat,
   project: Nullable<Project>,
 ): ProjectChat => {
   return {
     ...chat,
-    project: project ?? undefined,
+    messages: firstOrEmpty(chat.messages),
+    project: orDefault(project, undefined),
   }
 }

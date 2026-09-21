@@ -3,11 +3,13 @@ import {
   byId,
   byProp,
   first,
+  firstOrEmpty,
   generateUuid,
   isDefined,
   isNonEmpty,
   isNullable,
   isUndefined,
+  orDefault,
   sleep,
 } from './common.utils'
 
@@ -190,5 +192,84 @@ describe('first', () => {
       1,
       2,
     ])
+  })
+})
+
+describe('firstOrEmpty', () => {
+  it('returns an array with only the first element', () => {
+    expect(firstOrEmpty([
+      1,
+      2,
+      3,
+    ])).toEqual([1])
+  })
+
+  it('returns an array with the only element of a single-item array', () => {
+    expect(firstOrEmpty(['a'])).toEqual(['a'])
+  })
+
+  it('returns an empty array for an empty array', () => {
+    expect(firstOrEmpty([])).toEqual([])
+  })
+
+  it('keeps falsy first elements', () => {
+    expect(firstOrEmpty([
+      0,
+      1,
+    ])).toEqual([0])
+    expect(firstOrEmpty([
+      undefined,
+      1,
+    ])).toEqual([undefined])
+  })
+
+  it('returns a new array and does not modify the source', () => {
+    const array = [1]
+
+    const result = firstOrEmpty(array)
+
+    expect(result).not.toBe(array)
+    expect(array).toEqual([1])
+  })
+})
+
+describe('orDefault', () => {
+  it('returns the value when it is set', () => {
+    expect(orDefault('a', 'fallback')).toBe('a')
+  })
+
+  it('returns the fallback for null', () => {
+    expect(orDefault(null, 'fallback')).toBe('fallback')
+  })
+
+  it('returns the fallback for undefined', () => {
+    expect(orDefault(undefined, 'fallback')).toBe('fallback')
+  })
+
+  it.each([
+    [
+      0,
+      1,
+    ],
+    [
+      '',
+      'fallback',
+    ],
+    [
+      false,
+      true,
+    ],
+    [
+      Number.NaN,
+      1,
+    ],
+  ])('keeps the falsy value %j instead of the fallback', (value, fallback) => {
+    expect(orDefault<unknown>(value, fallback)).toBe(value)
+  })
+
+  it('returns the same reference for object values', () => {
+    const value = { id: 'a' }
+
+    expect(orDefault(value, { id: 'b' })).toBe(value)
   })
 })

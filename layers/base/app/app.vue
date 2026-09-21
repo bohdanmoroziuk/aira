@@ -1,5 +1,8 @@
 <script setup lang="ts">
 const appConfig = useAppConfig()
+const { getChats } = useChats()
+
+await getChats()
 
 useHead({
   titleTemplate: (title) => (
