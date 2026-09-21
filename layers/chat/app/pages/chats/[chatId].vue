@@ -26,7 +26,7 @@ useHead({
 
 <template>
   <ChatWindow
-    :chat="chat!"
+    :title="chatTitle"
     :messages
     :is-streaming
     @send-message="handleMessageSend"
