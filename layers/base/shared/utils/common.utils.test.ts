@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   byId,
   byProp,
+  first,
   generateUuid,
   isDefined,
   isNonEmpty,
@@ -146,5 +147,48 @@ describe('isNonEmpty', () => {
   it('is true for an array with elements, including falsy ones', () => {
     expect(isNonEmpty([1])).toBe(true)
     expect(isNonEmpty([undefined])).toBe(true)
+  })
+})
+
+describe('first', () => {
+  it('returns the first element of an array', () => {
+    expect(first([
+      1,
+      2,
+      3,
+    ])).toBe(1)
+  })
+
+  it('returns the only element of a single-item array', () => {
+    expect(first(['a'])).toBe('a')
+  })
+
+  it('returns undefined for an empty array', () => {
+    expect(first([])).toBeUndefined()
+  })
+
+  it('returns falsy first elements as they are', () => {
+    expect(first([
+      0,
+      1,
+    ])).toBe(0)
+    expect(first([
+      null,
+      1,
+    ])).toBeNull()
+  })
+
+  it('does not modify the array', () => {
+    const array = [
+      1,
+      2,
+    ]
+
+    first(array)
+
+    expect(array).toEqual([
+      1,
+      2,
+    ])
   })
 })

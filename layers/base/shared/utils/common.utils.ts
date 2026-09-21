@@ -73,3 +73,11 @@ export const isNullable = <T>(value: Nullable<T>): value is null => value === nu
  * @returns True if the array has at least one element.
  */
 export const isNonEmpty = <T>(array: T[]): boolean => array.length > 0
+
+/**
+ * Returns the first element of an array.
+ *
+ * @param array - Array to take the element from.
+ * @returns The first element, or undefined if the array is empty.
+ */
+export const first = <T>(array: readonly T[]): Optional<T> => array[0]
