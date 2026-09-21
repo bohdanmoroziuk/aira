@@ -6,6 +6,7 @@ import {
   firstOrEmpty,
   generateUuid,
   isDefined,
+  isEmpty,
   isNonEmpty,
   isNullable,
   isUndefined,
@@ -149,6 +150,17 @@ describe('isNonEmpty', () => {
   it('is true for an array with elements, including falsy ones', () => {
     expect(isNonEmpty([1])).toBe(true)
     expect(isNonEmpty([undefined])).toBe(true)
+  })
+})
+
+describe('isEmpty', () => {
+  it('is true for an empty array', () => {
+    expect(isEmpty([])).toBe(true)
+  })
+
+  it('is false for an array with elements, including falsy ones', () => {
+    expect(isEmpty([1])).toBe(false)
+    expect(isEmpty([undefined])).toBe(false)
   })
 })
 

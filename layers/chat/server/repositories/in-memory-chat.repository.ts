@@ -37,6 +37,17 @@ export const createInMemoryChatRepository = (): ChatRepository => {
       return Promise.resolve({ ...message })
     },
 
+    updateChat(chatId, data) {
+      const chat = chats.find((chat) => chat.id === chatId)
+
+      if (!chat) return Promise.resolve(null)
+
+      chat.title = data.title ?? chat.title
+      chat.updatedAt = new Date()
+
+      return Promise.resolve({ ...chat })
+    },
+
     createChat(data) {
       const chat = {
         id: generateUuid(),

@@ -17,5 +17,20 @@ export const createOpenAIAssistant = (apiKey: string, modelId = 'gpt-4o-mini'): 
 
       return response.text.trim()
     },
+
+    async generateTitle(message: string) {
+      const response = await generateText({
+        model,
+        instructions: 'You are a helpful assistant that generates concise, descriptive titles for chat conversations. Generate a title that captures the essence of the first message in a few words.',
+        messages: [
+          {
+            role: 'user',
+            content: message,
+          },
+        ],
+      })
+
+      return response.text.trim()
+    },
   }
 }

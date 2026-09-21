@@ -75,6 +75,14 @@ export const isNullable = <T>(value: Nullable<T>): value is null => value === nu
 export const isNonEmpty = <T>(array: T[]): boolean => array.length > 0
 
 /**
+ * Checks whether an array has no elements.
+ *
+ * @param array - Array to check.
+ * @returns True if the array is empty.
+ */
+export const isEmpty = <T>(array: T[]): boolean => array.length === 0
+
+/**
  * Returns the first element of an array.
  *
  * @param array - Array to take the element from.

@@ -1,10 +1,10 @@
-import { requestAddChatMessage, requestAssistantReply } from '../gateways/chat.gateway'
+import { requestAddChatMessage, requestAssistantReply, requestGenerateChatTitle } from '../gateways/chat.gateway'
 import { useGetChatMessagesQuery } from '../queries/get-chat-messages.query'
 
 const DEFAULT_CHAT_TITLE = 'Untitled Chat'
 
 export const useChat = (chatId: MaybeRefOrGetter<string>) => {
-  const { chats, addMessage, setMessages } = useChats()
+  const { chats, updateChat, addMessage, setMessages } = useChats()
 
   const chat = computed<Optional<Chat>>(() => (
     chats.value.find(byId(toValue(chatId)))
@@ -20,7 +20,7 @@ export const useChat = (chatId: MaybeRefOrGetter<string>) => {
 
   const getMessages = async () => {
     if (isUndefined(toValue(chat))) return
-    if (status.value !== 'idle') return
+    if (isNotIdle(status)) return
 
     await execute()
     setMessages(chat.value!.id, data.value)
@@ -30,11 +30,23 @@ export const useChat = (chatId: MaybeRefOrGetter<string>) => {
 
   const chatTitle = computed(() => chat.value?.title || DEFAULT_CHAT_TITLE)
 
+  const generateChatTitle = async (text: string) => {
+    if (isUndefined(chat.value)) return
+
+    const updatedChat = await requestGenerateChatTitle(chat.value.id, { text })
+
+    updateChat(updatedChat)
+  }
+
   const sendMessage = async (text: string) => {
     if (!chat.value) return
     if (isStreaming.value) return
 
     try {
+      if (isEmpty(messages.value)) {
+        generateChatTitle(text)
+      }
+
       const message = await requestAddChatMessage(chat.value.id, {
         role: 'user',
         content: text,

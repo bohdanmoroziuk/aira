@@ -58,4 +58,33 @@ describe('createOpenAIAssistant', () => {
       ],
     }))
   })
+
+  it('returns the trimmed model title for the given message', async () => {
+    mockModelReply('  Learning Vue  ')
+    const assistant = createOpenAIAssistant('test-key')
+
+    const title = await assistant.generateTitle('How do I learn Vue?')
+
+    expect(title).toBe('Learning Vue')
+    expect(generateText).toHaveBeenLastCalledWith(expect.objectContaining({
+      messages: [
+        {
+          role: 'user',
+          content: 'How do I learn Vue?',
+        },
+      ],
+    }))
+  })
+
+  it('passes the title guidance as instructions, not as a system message', async () => {
+    mockModelReply('Learning Vue')
+    const assistant = createOpenAIAssistant('test-key')
+
+    await assistant.generateTitle('How do I learn Vue?')
+
+    const options = vi.mocked(generateText).mock.calls.at(-1)?.[0]
+
+    expect(options).toHaveProperty('instructions', expect.any(String))
+    expect(options?.messages).not.toContainEqual(expect.objectContaining({ role: 'system' }))
+  })
 })

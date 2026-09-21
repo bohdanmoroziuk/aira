@@ -25,6 +25,7 @@ const createFakeChatRepository = (chats: Chat[]): ChatRepository => ({
   addChatMessage: () => Promise.reject(new Error('not implemented')),
   getChatMessages: () => Promise.reject(new Error('not implemented')),
   getChats: () => Promise.resolve(chats),
+  updateChat: () => Promise.reject(new Error('not implemented')),
   createChat: () => Promise.reject(new Error('not implemented')),
 })
 

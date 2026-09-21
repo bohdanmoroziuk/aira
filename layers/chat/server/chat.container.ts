@@ -5,6 +5,7 @@ import { makeCreateChatUseCase } from './flows/create-chat'
 import { makeGetChatMessagesUseCase } from './flows/get-chat-messages'
 import { createOpenAIAssistant } from './assistants/openai.assistant'
 import { makeAddChatMessageUseCase } from './flows/add-chat-message'
+import { makeGenerateChatTitleUseCase } from './flows/generate-chat-title'
 import { makeGenerateAssistantReplyUseCase } from './flows/generate-assistant-reply'
 import { makeCreateProjectUseCase } from './flows/create-project'
 import { makeGetProjectsUseCase } from './flows/get-projects'
@@ -20,6 +21,7 @@ export const getChats = makeGetChatsUseCase(chatRepository, projectRepository)
 export const getChatMessages = makeGetChatMessagesUseCase(chatRepository)
 export const addChatMessage = makeAddChatMessageUseCase(chatRepository)
 export const generateAssistantReply = makeGenerateAssistantReplyUseCase(chatRepository, assistant)
+export const generateChatTitle = makeGenerateChatTitleUseCase(chatRepository, projectRepository, assistant)
 export const createChat = makeCreateChatUseCase(chatRepository, projectRepository)
 export const createProject = makeCreateProjectUseCase(projectRepository)
 export const getProjects = makeGetProjectsUseCase(projectRepository)

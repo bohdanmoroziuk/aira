@@ -5,13 +5,29 @@
  * of the transport details (URL, method, body shape). This is the single place
  * to add request/response normalisation, auth headers or cancellation later.
  */
+
+export type RequestCreateChatBody = {
+  title?: string
+  proejct?: string
+}
+
+export type RequestGenerateChatTitleBody = {
+  text: string
+}
+
 export const requestChats = () =>
   $fetch<Chat[]>('/api/chats')
 
-export const requestCreateChat = (projectId?: string) =>
+export const requestCreateChat = (body: RequestCreateChatBody = {}) =>
   $fetch<Chat>('/api/chats', {
     method: 'post',
-    body: { projectId },
+    body,
+  })
+
+export const requestGenerateChatTitle = (chatId: string, body: RequestGenerateChatTitleBody) =>
+  $fetch<Chat>(`/api/chats/${chatId}/title`, {
+    method: 'post',
+    body,
   })
 
 export const requestChatMessages = (chatId: string) =>

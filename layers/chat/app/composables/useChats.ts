@@ -1,7 +1,10 @@
 import { requestCreateChat } from '../gateways/chat.gateway'
 import { useGetChatsQuery } from '../queries/get-chats.query'
 
-type CreateChatOptions = Pick<Chat, 'projectId'>
+type CreateChatInput = {
+  title?: string
+  projectId?: string
+}
 
 export const useChats = () => {
   const chats = useState<Chat[]>('chats', () => [])
@@ -9,25 +12,33 @@ export const useChats = () => {
   const { data, execute, status } = useGetChatsQuery()
 
   const getChats = async () => {
-    if (status.value === 'idle') {
+    if (isIdle(status)) {
       await execute()
       chats.value = data.value
     }
   }
 
-  const createChat = async (options: CreateChatOptions = {}) => {
-    const chat = await requestCreateChat(options.projectId)
+  const createChat = async (input: CreateChatInput = {}) => {
+    const chat = await requestCreateChat(input)
 
     chats.value.push(chat)
 
     return chat
   }
 
+  const updateChat = (updatedChat: Chat) => {
+    chats.value = chats.value.map((chat) => {
+      return chat.id === updatedChat.id
+        ? updatedChat
+        : chat
+    })
+  }
+
   const getProjectChats = (projectId: string) => {
     return chats.value.filter(byProp('projectId', projectId))
   }
 
-  const startNewChat = async (options: CreateChatOptions = {}) => {
+  const startNewChat = async (options: CreateChatInput = {}) => {
     const chat = await createChat(options)
 
     const chatTo = chat.projectId
@@ -80,6 +91,7 @@ export const useChats = () => {
     chats,
     getChats,
     createChat,
+    updateChat,
     getProjectChats,
     startNewChat,
     addMessage,

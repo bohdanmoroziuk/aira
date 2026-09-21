@@ -24,6 +24,7 @@ const createFakeChatRepository = (messages: ChatMessage[]) => {
     getChats: () => Promise.reject(new Error('not implemented')),
     getChatMessages: () => Promise.resolve(messages),
     addChatMessage,
+    updateChat: () => Promise.reject(new Error('not implemented')),
     createChat: () => Promise.reject(new Error('not implemented')),
   }
 
@@ -37,7 +38,10 @@ const createFakeAssistant = (reply = 'Hi there!') => {
   const generateReply = vi.fn<Assistant['generateReply']>(() => Promise.resolve(reply))
 
   return {
-    assistant: { generateReply } satisfies Assistant,
+    assistant: {
+      generateReply,
+      generateTitle: () => Promise.reject(new Error('not implemented')),
+    } satisfies Assistant,
     generateReply,
   }
 }
@@ -108,7 +112,10 @@ describe('makeGenerateAssistantReplyUseCase', () => {
 
   it('does not store anything when the assistant fails', async () => {
     const { repository, addChatMessage } = createFakeChatRepository([createMessage()])
-    const assistant: Assistant = { generateReply: () => Promise.reject(new Error('model down')) }
+    const assistant: Assistant = {
+      generateReply: () => Promise.reject(new Error('model down')),
+      generateTitle: () => Promise.reject(new Error('not implemented')),
+    }
 
     await expect(
       makeGenerateAssistantReplyUseCase(repository, assistant)('chat-1'),
