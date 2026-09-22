@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import { $fetch, fetch } from '@nuxt/test-utils/e2e'
 
+const missingProjectId = '00000000-0000-4000-8000-000000000000'
+
 describe('GET /api/projects/:projectId', () => {
   const createProject = (name: string) => $fetch<Project>('/api/projects', {
     method: 'POST',
@@ -37,7 +39,7 @@ describe('GET /api/projects/:projectId', () => {
   })
 
   it('responds with 204 and no body when the project does not exist', async () => {
-    const response = await fetch('/api/projects/missing')
+    const response = await fetch(`/api/projects/${missingProjectId}`)
 
     expect(response.status).toBe(204)
     expect(await response.text()).toBe('')
