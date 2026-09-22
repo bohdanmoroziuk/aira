@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import { $fetch, fetch } from '@nuxt/test-utils/e2e'
 
+const missingChatId = '00000000-0000-4000-8000-000000000000'
+
 describe('POST /api/chats/:chatId/messages', () => {
   const createChat = () => $fetch<Chat>('/api/chats', {
     method: 'POST',
@@ -73,7 +75,7 @@ describe('POST /api/chats/:chatId/messages', () => {
   })
 
   it('responds with 204 and no body when the chat does not exist', async () => {
-    const response = await fetch('/api/chats/missing/messages', {
+    const response = await fetch(`/api/chats/${missingChatId}/messages`, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({

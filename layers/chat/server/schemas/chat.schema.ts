@@ -1,5 +1,6 @@
 import { z } from 'zod'
+import { entityIdSchema } from './id.schema'
 
 export const chatParamsSchema = z.object({
-  chatId: z.string().min(1),
+  chatId: entityIdSchema,
 })

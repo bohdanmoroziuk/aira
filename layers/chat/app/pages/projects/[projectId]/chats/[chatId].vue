@@ -6,10 +6,11 @@ const appConfig = useAppConfig()
 const route = useRoute('projects-projectId-chats-chatId')
 const projectId = computed(() => route.params.projectId as string)
 const chatId = computed(() => route.params.chatId as string)
-const { chat, chatTitle, messages, isStreaming, sendMessage } = useChat(chatId)
+const { chat, chatTitle, messages, isStreaming, sendMessage, getMessages } = useChat(chatId)
 
 await ensureChatExists(chat)
 await ensureChatBelongsToProject(chat, projectId)
+await getMessages()
 
 const title = computed(() =>
   chat.value?.title
