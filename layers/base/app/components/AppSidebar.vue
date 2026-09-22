@@ -65,7 +65,7 @@ const hasProjects = computed(() => {
 })
 
 const handleProjectCreate = async () => {
-  const project = createProject()
+  const project = await createProject()
 
   await startNewChat({ projectId: project.id })
 }
@@ -121,32 +121,34 @@ const hasChatGroups = computed(() => chatGroups.value.length > 0)
     class="fixed top-16 left-0 bottom-0 w-64 transition-transform duration-300 z-40 bg-muted border-r-default border-r"
     :class="{ '-translate-x-full': !isSidebarOpen }"
   >
-    <template v-if="hasProjects">
-      <div class="mb-4 overflow-auto p-4 border-b border-default">
-        <div class="flex justify-between items-center mb-2">
-          <h2
-            class="text-sm font-semibold text-muted"
-          >
-            Projects
-          </h2>
-        </div>
+    <div class="mb-4 overflow-auto p-4 border-b border-default">
+      <div class="flex justify-between items-center mb-2">
+        <h2
+          class="text-sm font-semibold text-muted"
+        >
+          Projects
+        </h2>
+      </div>
+
+      <template v-if="hasProjects">
         <UNavigationMenu
           :items="projectMenuItems"
           class="w-full mb-4"
           orientation="vertical"
           default-open
         />
-        <UButton
-          size="sm"
-          color="neutral"
-          variant="soft"
-          icon="i-heroicons-plus-small"
-          class="mt-2 w-full"
-          label="New project"
-          @click="handleProjectCreate"
-        />
-      </div>
-    </template>
+      </template>
+
+      <UButton
+        size="sm"
+        color="neutral"
+        variant="soft"
+        icon="i-heroicons-plus-small"
+        class="mt-2 w-full"
+        label="New project"
+        @click="handleProjectCreate"
+      />
+    </div>
 
     <div class="overflow-y-auto p-4">
       <template v-if="hasChatGroups">

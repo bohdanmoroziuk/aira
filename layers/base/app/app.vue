@@ -1,8 +1,12 @@
 <script setup lang="ts">
 const appConfig = useAppConfig()
 const { getChats } = useChats()
+const { getProjects } = useProjects()
 
-await getChats()
+await Promise.all([
+  getChats(),
+  getProjects(),
+])
 
 useHead({
   titleTemplate: (title) => (
